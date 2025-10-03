@@ -1,11 +1,8 @@
-package com.alexmls.lazypizza.ui
+package com.alexmls.lazypizza.designsystem
 
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.window.core.layout.WindowSizeClass
 
 @Immutable
 enum class LayoutType { Mobile, Wide }

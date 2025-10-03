@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.ui.theme
+package com.alexmls.lazypizza.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -80,3 +80,6 @@ val Typography.bodyLargeMedium: TextStyle
  // Body-3-Medium 14/18
 val Typography.bodyMediumMedium: TextStyle
     get() = bodyMedium.copy(fontWeight = FontWeight.Medium)
+
+val Typography.bodyMediumBold: TextStyle
+    get() = bodyMedium.copy(fontWeight = FontWeight.Bold)
