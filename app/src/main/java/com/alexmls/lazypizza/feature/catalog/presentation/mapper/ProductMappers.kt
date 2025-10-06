@@ -5,8 +5,6 @@ import com.alexmls.lazypizza.feature.catalog.domain.model.Category
 import com.alexmls.lazypizza.feature.catalog.domain.model.Product
 import com.alexmls.lazypizza.feature.catalog.presentation.model.CategoryUi
 import com.alexmls.lazypizza.feature.catalog.presentation.model.ProductUi
-import java.text.NumberFormat
-import java.util.Locale
 
 private val localImageRes: Map<String, Int> = mapOf(
     "pizza_margherita" to R.drawable.pizza_margherita,
@@ -15,29 +13,23 @@ private val localImageRes: Map<String, Int> = mapOf(
     "sauce_bbq"        to R.drawable.sauce_bbq
 )
 
-private fun Int.toPriceLabel(locale: Locale = Locale.getDefault()): String {
-    val amount = this / 100.0
-    return NumberFormat.getCurrencyInstance(locale).format(amount)
-}
-
-fun Product.toUi(locale: Locale = Locale.getDefault()): ProductUi {
-    val resId = localImageRes[id] ?: R.drawable.ic_placeholder
+fun Product.toUi(): ProductUi {
     return ProductUi(
         id = id,
         name = name,
         description = description?.trim().orEmpty(),
         priceCents = priceCents,
-        priceLabel = priceCents.toPriceLabel(locale),
-        category = when (category) {
-            Category.Pizza        -> CategoryUi.Pizza
-            Category.Drinks       -> CategoryUi.Drinks
-            Category.Sauces       -> CategoryUi.Sauces
-            Category.IceCream     -> CategoryUi.IceCream
-        },
-        imageResId = resId
+        category = category.toUi(),
+        imageResId = localImageRes[id] ?: R.drawable.ic_placeholder
     )
 }
 
+private fun Category.toUi() = when (this) {
+    Category.Pizza -> CategoryUi.Pizza
+    Category.Drinks -> CategoryUi.Drinks
+    Category.Sauces -> CategoryUi.Sauces
+    Category.IceCream -> CategoryUi.IceCream
+}
 
 /*
  // LATER (when switching to URLs):

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Lazy Pizza</string>
     <string name="add_to_cart">Add to Cart</string>
+    <string name="delete_item">Delete item</string>
+    <string name="decrease_item_quantity">Decrease item quantity</string>
+    <string name="increase_item_quantity">Increase item quantity</string>
 </resources>

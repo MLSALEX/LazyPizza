@@ -9,3 +9,7 @@ import com.alexmls.lazypizza.R
 val Icons.Filled.Remove: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_minus)
+
+val Icons.Filled.Trash: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.ic_trash)

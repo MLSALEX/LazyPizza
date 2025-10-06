@@ -9,7 +9,6 @@ data class ProductUi(
     val name: String,
     val description: String,
     val priceCents: Int,
-    val priceLabel: String,
     val category: CategoryUi,
     @DrawableRes val imageResId: Int
 )
