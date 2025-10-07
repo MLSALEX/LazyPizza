@@ -10,6 +10,9 @@ activityCompose = "1.11.0"
 composeBom = "2024.09.00"
 splashscreen = "1.0.1"
 compose-adaptive = "1.0.0"
+coil = "2.6.0"
+koin = "3.5.6"
+lifecycle = "2.8.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +33,12 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref="splashscreen"}
 
 androidx-compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "compose-adaptive" }
+
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

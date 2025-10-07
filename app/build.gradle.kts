@@ -61,4 +61,9 @@ dependencies {
 
     implementation(libs.androidx.compose.material3.adaptive)
 
+    implementation(libs.coil.compose)
+
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(libs.lifecycle.runtime.compose)
 }
