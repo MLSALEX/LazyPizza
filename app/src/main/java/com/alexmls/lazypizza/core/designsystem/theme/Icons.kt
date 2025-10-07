@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.designsystem.theme
+package com.alexmls.lazypizza.core.designsystem.theme
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
@@ -13,3 +13,7 @@ val Icons.Filled.Remove: ImageVector
 val Icons.Filled.Trash: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_trash)
+
+val Icons.Filled.Search: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.ic_search)

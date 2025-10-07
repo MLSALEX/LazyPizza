@@ -4,4 +4,6 @@
     <string name="delete_item">Delete item</string>
     <string name="decrease_item_quantity">Decrease item quantity</string>
     <string name="increase_item_quantity">Increase item quantity</string>
+    <string name="search_placeholder">Search for delicious food...</string>
+    <string name="no_results_message">No results found for your query: "%1$s"</string>
 </resources>
