@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.designsystem
+package com.alexmls.lazypizza.core.designsystem
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable

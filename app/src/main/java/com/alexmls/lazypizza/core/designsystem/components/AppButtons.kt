@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.designsystem.components
+package com.alexmls.lazypizza.core.designsystem.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -24,9 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.alexmls.lazypizza.designsystem.theme.BrandColors
-import com.alexmls.lazypizza.designsystem.theme.LazyPizzaTheme
-import com.alexmls.lazypizza.designsystem.theme.pillShape
+import com.alexmls.lazypizza.core.designsystem.theme.BrandColors
+import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
+import com.alexmls.lazypizza.core.designsystem.theme.pillShape
 
 
 @Composable

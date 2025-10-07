@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.feature.catalog.presentation.model
+package com.alexmls.lazypizza.catalog.presentation.model
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Immutable

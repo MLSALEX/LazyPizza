@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.designsystem.components
+package com.alexmls.lazypizza.core.designsystem.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,8 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
-import com.alexmls.lazypizza.designsystem.theme.LazyPizzaTheme
-import com.alexmls.lazypizza.designsystem.theme.bodyMediumBold
+import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
+import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumBold
 
 sealed interface NavBarAction {
     data object Back : NavBarAction
@@ -125,7 +125,7 @@ private fun Preview_NavBar_TitleWithPhone() {
                 title = "LazyPizza",
                 phone = "+1 (555) 321-7890"
             ),
-            onClick = {} // в превью — заглушка
+            onClick = {}
         )
     }
 }

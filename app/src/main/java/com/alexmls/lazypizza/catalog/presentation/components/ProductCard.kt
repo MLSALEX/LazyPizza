@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.feature.catalog.presentation.components
+package com.alexmls.lazypizza.catalog.presentation.components
 
 import androidx.annotation.IntRange
 import androidx.compose.animation.animateContentSize
@@ -45,16 +45,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
-import com.alexmls.lazypizza.designsystem.components.LpSecondaryButton
-import com.alexmls.lazypizza.designsystem.theme.LazyPizzaTheme
-import com.alexmls.lazypizza.designsystem.theme.Remove
-import com.alexmls.lazypizza.designsystem.theme.Trash
-import com.alexmls.lazypizza.designsystem.theme.bodyMediumMedium
-import com.alexmls.lazypizza.designsystem.theme.titleLargeSemiBold
-import com.alexmls.lazypizza.feature.catalog.presentation.ProductAction
-import com.alexmls.lazypizza.feature.catalog.presentation.model.CategoryUi
-import com.alexmls.lazypizza.feature.catalog.presentation.model.ProductUi
-import com.alexmls.lazypizza.feature.catalog.presentation.utils.UsdMoneyFormatter
+import com.alexmls.lazypizza.catalog.presentation.ProductAction
+import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
+import com.alexmls.lazypizza.catalog.presentation.model.ProductUi
+import com.alexmls.lazypizza.catalog.presentation.utils.UsdMoneyFormatter
+import com.alexmls.lazypizza.core.designsystem.components.LpSecondaryButton
+import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
+import com.alexmls.lazypizza.core.designsystem.theme.Remove
+import com.alexmls.lazypizza.core.designsystem.theme.Trash
+import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
+import com.alexmls.lazypizza.core.designsystem.theme.titleLargeSemiBold
 import java.util.Locale
 
 @Immutable

@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.feature.catalog.domain.model
+package com.alexmls.lazypizza.catalog.domain.model
 
 data class Product(
     val id: String,

@@ -1,10 +1,10 @@
-package com.alexmls.lazypizza.feature.catalog.presentation.mapper
+package com.alexmls.lazypizza.catalog.presentation.mapper
 
 import com.alexmls.lazypizza.R
-import com.alexmls.lazypizza.feature.catalog.domain.model.Category
-import com.alexmls.lazypizza.feature.catalog.domain.model.Product
-import com.alexmls.lazypizza.feature.catalog.presentation.model.CategoryUi
-import com.alexmls.lazypizza.feature.catalog.presentation.model.ProductUi
+import com.alexmls.lazypizza.catalog.domain.model.Category
+import com.alexmls.lazypizza.catalog.domain.model.Product
+import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
+import com.alexmls.lazypizza.catalog.presentation.model.ProductUi
 
 private val localImageRes: Map<String, Int> = mapOf(
     "pizza_margherita" to R.drawable.pizza_margherita,

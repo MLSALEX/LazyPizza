@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.feature.catalog.presentation
+package com.alexmls.lazypizza.catalog.presentation
 
 sealed interface ProductAction {
     data class OpenDetails(val id: String) : ProductAction
