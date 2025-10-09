@@ -4,10 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
-import com.alexmls.lazypizza.catalog.presentation.home.HomeRoot
+import androidx.navigation.compose.rememberNavController
+import com.alexmls.lazypizza.app.navigation.Navigation
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 
 
@@ -16,10 +14,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             LazyPizzaTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeRoot()
-                }
+                Navigation(navController = navController)
             }
         }
     }

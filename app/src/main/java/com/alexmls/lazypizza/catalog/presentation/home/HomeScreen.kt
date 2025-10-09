@@ -74,6 +74,7 @@ import java.util.Locale
 
 @Composable
 fun HomeRoot(
+    onNavigateToDetails: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel()
 ) {
@@ -87,7 +88,7 @@ fun HomeRoot(
         viewModel.events.collect { e ->
             when (e) {
                 is HomeEvent.NavigateToDetails -> {
-
+                    onNavigateToDetails(e.productId)
                 }
                 is HomeEvent.Dial -> openDialer(context, e.number)
             }
@@ -308,14 +309,24 @@ fun CategorizedLazyColumn(
                 val cardModifier = Modifier
                     .padding(vertical = 4.dp)
                 val id = sectionItem.product.id
-                val callbacks = remember(id, act) {
-                    ProductCallbacks(
-                        open   = { act(HomeAction.OpenDetails(id)) },
-                        add    = { act(HomeAction.Add(id)) },
-                        inc    = { act(HomeAction.Inc(id)) },
-                        dec    = { act(HomeAction.Dec(id)) },
-                        remove = { act(HomeAction.Remove(id)) }
-                    )
+                val callbacks = remember(id, act, sectionItem.product.category) {
+                    if (sectionItem.product.category == CategoryUi.Pizza) {
+                        ProductCallbacks(
+                            open   = { act(HomeAction.OpenDetails(id)) },
+                            add    = { act(HomeAction.Add(id)) },
+                            inc    = { act(HomeAction.Inc(id)) },
+                            dec    = { act(HomeAction.Dec(id)) },
+                            remove = { act(HomeAction.Remove(id)) }
+                        )
+                    } else {
+                        ProductCallbacks(
+                            open   = {},
+                            add    = { act(HomeAction.Add(id)) },
+                            inc    = { act(HomeAction.Inc(id)) },
+                            dec    = { act(HomeAction.Dec(id)) },
+                            remove = { act(HomeAction.Remove(id)) }
+                        )
+                    }
                 }
                 when (sectionItem.product.category) {
                     CategoryUi.Pizza -> {
