@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -58,6 +59,7 @@ import com.alexmls.lazypizza.catalog.presentation.utils.UsdMoneyFormatter
 import com.alexmls.lazypizza.catalog.presentation.utils.buildSectionStartIndex
 import com.alexmls.lazypizza.catalog.presentation.utils.displayName
 import com.alexmls.lazypizza.catalog.presentation.utils.titleRes
+import com.alexmls.lazypizza.core.common.openDialer
 import com.alexmls.lazypizza.core.designsystem.Adaptive
 import com.alexmls.lazypizza.core.designsystem.LayoutType
 import com.alexmls.lazypizza.core.designsystem.components.LpSearchField
@@ -80,15 +82,14 @@ fun HomeRoot(
     val formatter = remember { UsdMoneyFormatter(Locale.US) }
     val formatMoney: (Int) -> String = remember(formatter) { formatter::format }
 
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.events.collect { e ->
             when (e) {
                 is HomeEvent.NavigateToDetails -> {
 
                 }
-                is HomeEvent.Dial -> {
-
-                }
+                is HomeEvent.Dial -> openDialer(context, e.number)
             }
         }
     }
@@ -145,7 +146,7 @@ fun HomeScreen(
                 config = NavBarConfig.TitleWithPhone(state.title, state.phone),
                 onClick = { navAction ->
                     if (navAction is NavBarAction.Phone) {
-                        act(HomeAction.ClickPhone(navAction.number))
+                        act(HomeAction.ClickPhone(state.phone))
                     }
                 }
             )
