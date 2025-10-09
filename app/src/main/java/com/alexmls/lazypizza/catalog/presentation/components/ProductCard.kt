@@ -8,13 +8,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -45,7 +46,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
-import com.alexmls.lazypizza.catalog.presentation.ProductAction
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
 import com.alexmls.lazypizza.catalog.presentation.model.ProductUi
 import com.alexmls.lazypizza.catalog.presentation.utils.UsdMoneyFormatter
@@ -54,8 +54,16 @@ import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.core.designsystem.theme.Remove
 import com.alexmls.lazypizza.core.designsystem.theme.Trash
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
-import com.alexmls.lazypizza.core.designsystem.theme.titleLargeSemiBold
 import java.util.Locale
+
+@Immutable
+data class ProductCallbacks(
+    val open: () -> Unit,
+    val add: () -> Unit,
+    val inc: () -> Unit,
+    val dec: () -> Unit,
+    val remove: () -> Unit
+)
 
 @Immutable
 data class ProductCardStyle(
@@ -87,22 +95,16 @@ fun ProductCard(
     item: ProductUi,
     qty: Int,
     formatMoney: (Int) -> String,
-    onAction: (ProductAction) -> Unit,
+    callbacks: ProductCallbacks,
     variant: ProductCardVariant,
     modifier: Modifier = Modifier,
     style: ProductCardStyle = rememberProductCardStyle(),
 ) {
-    val act by rememberUpdatedState(onAction)
+    val cb by rememberUpdatedState(callbacks)
     val hasQty = qty > 0
 
-    val onOpen  = remember(item.id, act) { { act(ProductAction.OpenDetails(item.id)) } }
-    val onAdd   = remember(item.id, act) { { act(ProductAction.Add(item.id)) } }
-    val onInc   = remember(item.id, act) { { act(ProductAction.Inc(item.id)) } }
-    val onDec   = remember(item.id, act) { { act(ProductAction.Dec(item.id)) } }
-    val onRemove= remember(item.id, act) { { act(ProductAction.Remove(item.id)) } }
-
     Card(
-        onClick = onOpen,
+        onClick = cb.open,
         shape = style.shape,
         colors = CardDefaults.cardColors(
             containerColor = style.containerColor,
@@ -119,16 +121,16 @@ fun ProductCard(
         ProductCardContent(
             item = item,
             showDescription = (qty == 0),
-            topRight = if (hasQty) { { TrashButton(onClick = onRemove) } } else null,
+            topRight = if (hasQty) { { TrashButton(onClick = cb.remove) } } else null,
             bottomContent = {
                 BottomContent(
                     qty = qty,
                     priceCents = item.priceCents,
                     showAddButton = (variant == ProductCardVariant.WithAddButton && qty == 0),
                     formatMoney = formatMoney,
-                    onAdd = onAdd,
-                    onInc = onInc,
-                    onDec = onDec
+                    onAdd = cb.add,
+                    onInc = cb.inc,
+                    onDec = cb.dec
                 )
             }
         )
@@ -140,13 +142,13 @@ fun PizzaCard(
     item: ProductUi,
     @IntRange(from = 0)qty: Int,
     formatMoney: (Int) -> String,
-    onAction: (ProductAction) -> Unit,
+    callbacks: ProductCallbacks,
     modifier: Modifier = Modifier
 ) = ProductCard(
     item = item,
     qty = qty,
     formatMoney = formatMoney,
-    onAction = onAction,
+    callbacks = callbacks,
     variant = ProductCardVariant.NoAddButton,
     modifier = modifier
 )
@@ -156,13 +158,13 @@ fun OtherProductCard(
     item: ProductUi,
     @IntRange(from = 0) qty: Int,
     formatMoney: (Int) -> String,
-    onAction: (ProductAction) -> Unit,
+    callbacks: ProductCallbacks,
     modifier: Modifier = Modifier
 ) = ProductCard(
     item = item,
     qty = qty,
     formatMoney = formatMoney,
-    onAction = onAction,
+    callbacks = callbacks,
     variant = ProductCardVariant.WithAddButton,
     modifier = modifier
 )
@@ -181,7 +183,7 @@ private fun BottomContent(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = formatMoney(priceCents),
-                style = MaterialTheme.typography.titleLargeSemiBold,
+                style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.weight(1f)
             )
@@ -207,7 +209,7 @@ private fun BottomContent(
             ) {
                 Text(
                     text = total,
-                    style = MaterialTheme.typography.titleLargeSemiBold,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
@@ -272,14 +274,15 @@ private fun ProductCardContent(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(120.dp)
+            .height(IntrinsicSize.Min)
+            .requiredHeightIn(min = 120.dp)
             .padding(end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
                 .width(120.dp)
-                .height(120.dp)
+                .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
@@ -360,7 +363,13 @@ private fun Pizza_Qty0() {
             item = item,
             qty = 0,
             formatMoney = formatMoney,
-            onAction = {},
+            callbacks = ProductCallbacks(
+                open = {},
+                add = {},
+                inc = {},
+                dec = {},
+                remove = {}
+            ),
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
@@ -391,7 +400,13 @@ private fun Pizza_Qty2() {
             item = item,
             qty = 2,
             formatMoney = formatMoney,
-            onAction = {},
+            callbacks = ProductCallbacks(
+                open = {},
+                add = {},
+                inc = {},
+                dec = {},
+                remove = {}
+            ),
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
@@ -419,7 +434,13 @@ private fun Other_Qty0() {
             item = drink,
             qty = 0,
             formatMoney = formatMoney,
-            onAction = {},
+            callbacks = ProductCallbacks(
+                open = {},
+                add = {},
+                inc = {},
+                dec = {},
+                remove = {}
+            ),
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
@@ -427,7 +448,7 @@ private fun Other_Qty0() {
     }
 }
 
-@Preview(widthDp = 412, heightDp = 150, showBackground = true, backgroundColor = 0xFFF0F3F6)
+@Preview(widthDp = 360, heightDp = 150, showBackground = true, backgroundColor = 0xFFF0F3F6)
 @Composable
 private fun Other_Qty2() {
     LazyPizzaTheme {
@@ -447,7 +468,13 @@ private fun Other_Qty2() {
             item = drink,
             qty = 2,
             formatMoney = formatMoney,
-            onAction = {},
+            callbacks = ProductCallbacks(
+                open = {},
+                add = {},
+                inc = {},
+                dec = {},
+                remove = {}
+            ),
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()

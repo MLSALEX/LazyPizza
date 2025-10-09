@@ -1,17 +1,14 @@
-package com.alexmls.lazypizza
+package com.alexmls.lazypizza.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import com.alexmls.lazypizza.designsystem.theme.LazyPizzaTheme
 import androidx.compose.ui.Modifier
-import com.alexmls.lazypizza.designsystem.Adaptive
-import com.alexmls.lazypizza.designsystem.rememberLayoutType
+import com.alexmls.lazypizza.catalog.presentation.home.HomeRoot
+import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 
 
 class MainActivity : ComponentActivity() {
@@ -21,23 +18,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             LazyPizzaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    PizzaApp(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    HomeRoot()
                 }
             }
         }
     }
 }
 
-@Composable
-fun PizzaApp(modifier: Modifier = Modifier) {
-    val layout = rememberLayoutType()
-
-    Adaptive(
-        layout = layout,
-        mobile = {  },
-        wide   = {  }
-    )
-}
 

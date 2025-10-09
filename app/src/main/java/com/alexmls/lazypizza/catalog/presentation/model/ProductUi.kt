@@ -14,3 +14,15 @@ data class ProductUi(
 )
 
 enum class CategoryUi { Pizza, Drinks, Sauces, IceCream }
+
+@Immutable
+data class CategorySectionUi(
+    val category: CategoryUi,
+    val items: List<SectionItemUi>
+)
+
+@Immutable
+data class SectionItemUi(
+    val product: ProductUi,
+    val qty: Int
+)
