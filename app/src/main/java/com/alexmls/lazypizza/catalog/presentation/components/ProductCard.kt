@@ -8,13 +8,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -54,7 +55,6 @@ import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.core.designsystem.theme.Remove
 import com.alexmls.lazypizza.core.designsystem.theme.Trash
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
-import com.alexmls.lazypizza.core.designsystem.theme.titleLargeSemiBold
 import java.util.Locale
 
 @Immutable
@@ -181,7 +181,7 @@ private fun BottomContent(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = formatMoney(priceCents),
-                style = MaterialTheme.typography.titleLargeSemiBold,
+                style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.weight(1f)
             )
@@ -207,7 +207,7 @@ private fun BottomContent(
             ) {
                 Text(
                     text = total,
-                    style = MaterialTheme.typography.titleLargeSemiBold,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
@@ -272,14 +272,15 @@ private fun ProductCardContent(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(120.dp)
+            .height(IntrinsicSize.Min)
+            .requiredHeightIn(min = 120.dp)
             .padding(end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
                 .width(120.dp)
-                .height(120.dp)
+                .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
@@ -427,7 +428,7 @@ private fun Other_Qty0() {
     }
 }
 
-@Preview(widthDp = 412, heightDp = 150, showBackground = true, backgroundColor = 0xFFF0F3F6)
+@Preview(widthDp = 360, heightDp = 150, showBackground = true, backgroundColor = 0xFFF0F3F6)
 @Composable
 private fun Other_Qty2() {
     LazyPizzaTheme {

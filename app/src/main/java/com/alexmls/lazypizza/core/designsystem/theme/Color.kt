@@ -10,7 +10,7 @@ val TextSecondary = Color(0xFF627686)
 val TextSecondary8 = Color(0xFF627686).copy(alpha = 0.08f)
 val TextOnPrimary = Color(0xFFFFFFFF)
 
-val BG = Color(0xFFE6E7ED)
+val BG = Color(0xFFFAFBFC)
 val SurfaceHigher = Color(0xFFFFFFFF)
 val SurfaceHighest = Color(0xFFF0F3F6)
 
