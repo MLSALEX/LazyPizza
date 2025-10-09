@@ -45,9 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alexmls.lazypizza.R
-import com.alexmls.lazypizza.catalog.presentation.ProductAction
 import com.alexmls.lazypizza.catalog.presentation.components.OtherProductCard
 import com.alexmls.lazypizza.catalog.presentation.components.PizzaCard
+import com.alexmls.lazypizza.catalog.presentation.components.ProductCallbacks
 import com.alexmls.lazypizza.catalog.presentation.home.demomenu.DemoMenu
 import com.alexmls.lazypizza.catalog.presentation.model.CategorySectionUi
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
@@ -110,18 +110,6 @@ fun HomeScreen(
     layout: LayoutType = rememberLayoutType()
 ) {
     val act by rememberUpdatedState(onAction)
-
-    val onProductAction: (ProductAction) -> Unit = remember(act) {
-        { a ->
-            when (a) {
-                is ProductAction.OpenDetails -> act(HomeAction.OpenDetails(a.id))
-                is ProductAction.Add         -> act(HomeAction.Add(a.id))
-                is ProductAction.Inc         -> act(HomeAction.Inc(a.id))
-                is ProductAction.Dec         -> act(HomeAction.Dec(a.id))
-                is ProductAction.Remove      -> act(HomeAction.Remove(a.id))
-            }
-        }
-    }
 
     val filteredItems by remember(state.items, state.search) {
         derivedStateOf {
@@ -202,7 +190,7 @@ fun HomeScreen(
                             CategorizedLazyColumn(
                                 sections = sections,
                                 formatMoney = formatMoney,
-                                onProductAction = onProductAction,
+                                onAction = onAction,
                                 listState = listState
                             )
                         },
@@ -210,7 +198,7 @@ fun HomeScreen(
                             CategorizedGrid2Cols(
                                 sections = sections,
                                 formatMoney = formatMoney,
-                                onProductAction = onProductAction,
+                                onAction = onAction,
                                 gridState = gridState
                             )
                         }
@@ -289,10 +277,11 @@ fun CategoryHeader(category: CategoryUi, modifier: Modifier = Modifier) {
 fun CategorizedLazyColumn(
     sections: List<CategorySectionUi>,
     formatMoney: (Int) -> String,
-    onProductAction: (ProductAction) -> Unit,
+    onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState()
 ) {
+    val act by rememberUpdatedState(onAction)
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(bottom = 24.dp),
@@ -317,14 +306,23 @@ fun CategorizedLazyColumn(
             ) { sectionItem ->
                 val cardModifier = Modifier
                     .padding(vertical = 4.dp)
-
+                val id = sectionItem.product.id
+                val callbacks = remember(id, act) {
+                    ProductCallbacks(
+                        open   = { act(HomeAction.OpenDetails(id)) },
+                        add    = { act(HomeAction.Add(id)) },
+                        inc    = { act(HomeAction.Inc(id)) },
+                        dec    = { act(HomeAction.Dec(id)) },
+                        remove = { act(HomeAction.Remove(id)) }
+                    )
+                }
                 when (sectionItem.product.category) {
                     CategoryUi.Pizza -> {
                         PizzaCard(
                             item = sectionItem.product,
                             qty = sectionItem.qty,
                             formatMoney = formatMoney,
-                            onAction = onProductAction,
+                            callbacks = callbacks,
                             modifier = cardModifier
                         )
                     }
@@ -333,7 +331,7 @@ fun CategorizedLazyColumn(
                             item = sectionItem.product,
                             qty = sectionItem.qty,
                             formatMoney = formatMoney,
-                            onAction = onProductAction,
+                            callbacks = callbacks,
                             modifier = cardModifier
                         )
                     }
@@ -347,10 +345,11 @@ fun CategorizedLazyColumn(
 fun CategorizedGrid2Cols(
     sections: List<CategorySectionUi>,
     formatMoney: (Int) -> String,
-    onProductAction: (ProductAction) -> Unit,
+    onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
     gridState: LazyGridState = rememberLazyGridState()
 ) {
+    val act by rememberUpdatedState(onAction)
     LazyVerticalGrid(
         state = gridState,
         columns = GridCells.Fixed(2),
@@ -383,13 +382,23 @@ fun CategorizedGrid2Cols(
             ) { sectionItem ->
                 val cardModifier = Modifier
                     .fillMaxWidth()
+                val id = sectionItem.product.id
+                val callbacks = remember(id, act) {
+                    ProductCallbacks(
+                        open   = { act(HomeAction.OpenDetails(id)) },
+                        add    = { act(HomeAction.Add(id)) },
+                        inc    = { act(HomeAction.Inc(id)) },
+                        dec    = { act(HomeAction.Dec(id)) },
+                        remove = { act(HomeAction.Remove(id)) }
+                    )
+                }
                 when (sectionItem.product.category) {
                     CategoryUi.Pizza -> {
                         PizzaCard(
                             item = sectionItem.product,
                             qty = sectionItem.qty,
                             formatMoney = formatMoney,
-                            onAction = onProductAction,
+                            callbacks = callbacks,
                             modifier = cardModifier
                         )
                     }
@@ -398,7 +407,7 @@ fun CategorizedGrid2Cols(
                             item = sectionItem.product,
                             qty = sectionItem.qty,
                             formatMoney = formatMoney,
-                            onAction = onProductAction,
+                            callbacks = callbacks,
                             modifier = cardModifier
                         )
                     }
