@@ -44,16 +44,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.catalog.presentation.components.OtherProductCard
 import com.alexmls.lazypizza.catalog.presentation.components.PizzaCard
 import com.alexmls.lazypizza.catalog.presentation.components.ProductCallbacks
-import com.alexmls.lazypizza.catalog.presentation.home.demomenu.DemoMenu
 import com.alexmls.lazypizza.catalog.presentation.model.CategorySectionUi
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
-import com.alexmls.lazypizza.catalog.presentation.model.ProductUi
 import com.alexmls.lazypizza.catalog.presentation.model.SectionItemUi
+import com.alexmls.lazypizza.catalog.presentation.preview.PreviewProducts
 import com.alexmls.lazypizza.catalog.presentation.utils.CATEGORY_ORDER
 import com.alexmls.lazypizza.catalog.presentation.utils.UsdMoneyFormatter
 import com.alexmls.lazypizza.catalog.presentation.utils.buildSectionStartIndex
@@ -70,13 +68,14 @@ import com.alexmls.lazypizza.core.designsystem.components.NoResultsMsg
 import com.alexmls.lazypizza.core.designsystem.rememberLayoutType
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
 
 @Composable
 fun HomeRoot(
     onNavigateToDetails: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -456,18 +455,7 @@ private fun HomePreview_Wide() {
 }
 
 private fun previewHomeState(): HomeState {
-    val items = DemoMenu.all.ifEmpty {
-        listOf(
-        ProductUi(
-            "pizza_margherita", "Margherita",
-            "Tomato sauce, mozzarella, basil", 899, CategoryUi.Pizza, R.drawable.pizza_margherita
-        ),
-        ProductUi("drink_mineral", "Mineral Water",
-            "", 149, CategoryUi.Drinks, R.drawable.mineral_water),
-        ProductUi("sauce_bbq", "BBQ Sauce",
-            "", 79, CategoryUi.Sauces, R.drawable.sauce_bbq),
-    )
-    }
+    val items = PreviewProducts.basic4
     val qty = items.associate { it.id to 0 }
     return HomeState(
         title = "LazyPizza",

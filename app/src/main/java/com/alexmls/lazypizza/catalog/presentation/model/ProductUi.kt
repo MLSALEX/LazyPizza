@@ -1,6 +1,5 @@
 package com.alexmls.lazypizza.catalog.presentation.model
 
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Immutable
 
 @Immutable
@@ -10,7 +9,7 @@ data class ProductUi(
     val description: String,
     val priceCents: Int,
     val category: CategoryUi,
-    @DrawableRes val imageResId: Int
+    val imageUrl: String
 )
 
 enum class CategoryUi { Pizza, Drinks, Sauces, IceCream }

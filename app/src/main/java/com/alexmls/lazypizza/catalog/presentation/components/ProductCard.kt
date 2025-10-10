@@ -3,7 +3,6 @@ package com.alexmls.lazypizza.catalog.presentation.components
 import androidx.annotation.IntRange
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -35,12 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -286,14 +281,12 @@ private fun ProductCardContent(
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(item.imageResId),
+            ProductImage(
+                url = item.imageUrl,
                 contentDescription = item.name,
                 modifier = Modifier
                     .size(112.dp)
-                    .clip(CircleShape)
-                    .padding(4.dp),
-                contentScale = ContentScale.Crop
+                    .padding(6.dp)
             )
         }
 
@@ -356,7 +349,7 @@ private fun Pizza_Qty0() {
             description = "Tomato sauce, mozzarella, fresh basil, olive oil",
             priceCents = 899,
             category = CategoryUi.Pizza,
-            imageResId = R.drawable.pizza_margherita
+            imageUrl = "https://pl-coding.com/wp-content/uploads/lazypizza/pizza/Margherita.png"
         )
 
         PizzaCard(
@@ -393,7 +386,7 @@ private fun Pizza_Qty2() {
             description = "Tomato sauce, mozzarella, fresh basil, olive oil",
             priceCents = 899,
             category = CategoryUi.Pizza,
-            imageResId = R.drawable.pizza_margherita
+            imageUrl = "https://pl-coding.com/wp-content/uploads/lazypizza/pizza/margherita.png"
         )
 
         PizzaCard(
@@ -427,7 +420,7 @@ private fun Other_Qty0() {
             description = "",
             priceCents = 149,
             category = CategoryUi.Drinks,
-            imageResId = R.drawable.mineral_water
+            "https://pl-coding.com/wp-content/uploads/lazypizza/drink/mineral-water.png"
         )
 
         OtherProductCard(
@@ -461,7 +454,7 @@ private fun Other_Qty2() {
             description = "",
             priceCents = 149,
             category = CategoryUi.Drinks,
-            imageResId = R.drawable.mineral_water
+            "https://pl-coding.com/wp-content/uploads/lazypizza/sauce/bbq.png"
         )
 
         OtherProductCard(

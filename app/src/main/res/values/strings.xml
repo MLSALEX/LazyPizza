@@ -10,5 +10,6 @@
     <string name="cat_drinks">Drinks</string>
     <string name="cat_sauces">Sauces</string>
     <string name="cat_ice_cream">Ice Cream</string>
+    <string name="cat_unknown">Unknown</string>
     <string name="no_dialer_found">No dialer app found</string>
 </resources>

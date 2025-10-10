@@ -8,7 +8,7 @@ import com.alexmls.lazypizza.catalog.presentation.model.ProductUi
 data class HomeState(
     val title: String = "LazyPizza",
     val phone: String = "+1 (555) 321-7890",
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val search: String = "",
     val selected: CategoryUi? = null, // null = All
     val categories: List<CategoryUi> = CategoryUi.entries,

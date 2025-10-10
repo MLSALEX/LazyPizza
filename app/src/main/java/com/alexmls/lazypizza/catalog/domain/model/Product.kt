@@ -9,4 +9,4 @@ data class Product(
     val category: Category
 )
 
-enum class Category { Pizza, Drinks, Sauces, IceCream }
+enum class Category { Pizza, Drinks, Sauces, IceCream}

@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.alexmls.lazypizza" />
+                  <option name="mobileSdkAppId" value="1:816051786597:android:e26060b96bd1abfd76478c" />
+                  <option name="projectId" value="lazy-pizza-813df" />
+                  <option name="projectNumber" value="816051786597" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

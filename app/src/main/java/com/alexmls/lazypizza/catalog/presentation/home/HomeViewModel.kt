@@ -2,45 +2,37 @@ package com.alexmls.lazypizza.catalog.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alexmls.lazypizza.catalog.presentation.home.demomenu.DemoMenu
+import com.alexmls.lazypizza.catalog.domain.repo.ProductRepository
+import com.alexmls.lazypizza.catalog.presentation.mapper.toUi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
 class HomeViewModel (
-//    private val menuRepository: MenuRepository = DemoMenuRepository
+    private val productRepository: ProductRepository
 ): ViewModel() {
-
-    private var hasLoadedInitialData = false
 
     private val _events = Channel<HomeEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
-    private val _state = MutableStateFlow(HomeState(isLoading = true))
-    val state = _state
-        .onStart {
-            if (!hasLoadedInitialData) {
-                hasLoadedInitialData = true
+    private val _state = MutableStateFlow(HomeState())
+    val state: StateFlow<HomeState> = _state.asStateFlow()
 
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        items = DemoMenu.all
-                    )
+    init {
+        viewModelScope.launch {
+            productRepository.observeProducts()
+                .map { domain -> domain.map { it.toUi() } }
+                .collect { uiList ->
+                    _state.update { it.copy(isLoading = false, items = uiList) }
                 }
-            }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = HomeState()
-        )
+    }
 
     fun onAction(action: HomeAction) {
         when (action) {
