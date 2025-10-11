@@ -2,7 +2,6 @@ package com.alexmls.lazypizza.catalog.presentation.components
 
 import androidx.annotation.IntRange
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -34,8 +32,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,13 +39,15 @@ import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
 import com.alexmls.lazypizza.catalog.presentation.model.ProductUi
-import com.alexmls.lazypizza.catalog.presentation.utils.UsdMoneyFormatter
+import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
+import com.alexmls.lazypizza.core.designsystem.card_style.LpCardStyle
+import com.alexmls.lazypizza.core.designsystem.card_style.rememberLpCardStyle
 import com.alexmls.lazypizza.core.designsystem.components.LpSecondaryButton
+import com.alexmls.lazypizza.core.designsystem.controls.QtySelector
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
-import com.alexmls.lazypizza.core.designsystem.theme.Remove
 import com.alexmls.lazypizza.core.designsystem.theme.Trash
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
-import java.util.Locale
+
 
 @Immutable
 data class ProductCallbacks(
@@ -60,40 +58,16 @@ data class ProductCallbacks(
     val remove: () -> Unit
 )
 
-@Immutable
-data class ProductCardStyle(
-    val shape: Shape,
-    val containerColor: Color,
-    val border: BorderStroke,
-    val shadowSpot: Color,
-    val shadowAmbient: Color,
-)
-
-@Composable
-fun rememberProductCardStyle(): ProductCardStyle {
-    val cs = MaterialTheme.colorScheme
-    val shape = MaterialTheme.shapes.medium
-    val borderColor = Color.White.copy(alpha = 0.9f)
-    return ProductCardStyle(
-        shape = shape,
-        containerColor = cs.surface,
-        border = BorderStroke(1.dp, borderColor),
-        shadowSpot = cs.onPrimaryContainer.copy(alpha = 0.06f),
-        shadowAmbient = cs.onPrimaryContainer
-    )
-}
-
 enum class ProductCardVariant { WithAddButton, NoAddButton }
 
 @Composable
 fun ProductCard(
     item: ProductUi,
     qty: Int,
-    formatMoney: (Int) -> String,
     callbacks: ProductCallbacks,
     variant: ProductCardVariant,
     modifier: Modifier = Modifier,
-    style: ProductCardStyle = rememberProductCardStyle(),
+    style: LpCardStyle = rememberLpCardStyle(),
 ) {
     val cb by rememberUpdatedState(callbacks)
     val hasQty = qty > 0
@@ -102,10 +76,10 @@ fun ProductCard(
         onClick = cb.open,
         shape = style.shape,
         colors = CardDefaults.cardColors(
-            containerColor = style.containerColor,
-            contentColor = contentColorFor(style.containerColor)
+            containerColor = style.container,
+            contentColor = contentColorFor(style.container)
         ),
-        border = style.border,
+        border = style.borderDefault,
         modifier = modifier.shadow(
             elevation = 16.dp,
             shape = style.shape,
@@ -122,7 +96,6 @@ fun ProductCard(
                     qty = qty,
                     priceCents = item.priceCents,
                     showAddButton = (variant == ProductCardVariant.WithAddButton && qty == 0),
-                    formatMoney = formatMoney,
                     onAdd = cb.add,
                     onInc = cb.inc,
                     onDec = cb.dec
@@ -136,13 +109,11 @@ fun ProductCard(
 fun PizzaCard(
     item: ProductUi,
     @IntRange(from = 0)qty: Int,
-    formatMoney: (Int) -> String,
     callbacks: ProductCallbacks,
     modifier: Modifier = Modifier
 ) = ProductCard(
     item = item,
     qty = qty,
-    formatMoney = formatMoney,
     callbacks = callbacks,
     variant = ProductCardVariant.NoAddButton,
     modifier = modifier
@@ -152,13 +123,11 @@ fun PizzaCard(
 fun OtherProductCard(
     item: ProductUi,
     @IntRange(from = 0) qty: Int,
-    formatMoney: (Int) -> String,
     callbacks: ProductCallbacks,
     modifier: Modifier = Modifier
 ) = ProductCard(
     item = item,
     qty = qty,
-    formatMoney = formatMoney,
     callbacks = callbacks,
     variant = ProductCardVariant.WithAddButton,
     modifier = modifier
@@ -169,7 +138,6 @@ private fun BottomContent(
     qty: Int,
     priceCents: Int,
     showAddButton: Boolean,
-    formatMoney: (Int) -> String,
     onAdd: () -> Unit,
     onInc: () -> Unit,
     onDec: () -> Unit
@@ -177,7 +145,7 @@ private fun BottomContent(
     if (qty == 0) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = formatMoney(priceCents),
+                text = UsdFormat.format(priceCents),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.weight(1f)
@@ -191,12 +159,15 @@ private fun BottomContent(
             }
         }
     } else {
-        val money by rememberUpdatedState(formatMoney)
-        val total = remember(qty, priceCents) { money(qty * priceCents) }
-        val unit  = remember(priceCents) { money(priceCents) }
+        val total = remember(qty, priceCents) { UsdFormat.format(qty * priceCents) }
+        val unit  = remember(priceCents) { UsdFormat.format(priceCents) }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            QtySelector(qty = qty, onInc = onInc, onDec = onDec)
+            QtySelector(
+                value = qty,
+                onInc = onInc,
+                onDec = onDec
+            )
             Spacer(Modifier.width(12.dp))
             Column(
                 horizontalAlignment = Alignment.End,
@@ -213,32 +184,6 @@ private fun BottomContent(
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun QtySelector(qty: Int, onInc: () -> Unit, onDec: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-       IconButton(onClick = onDec, modifier = Modifier.size(24.dp)) {
-            Icon(
-                Icons.Filled.Remove,
-                contentDescription = stringResource(R.string.decrease_item_quantity),
-                modifier = Modifier.size(14.dp)
-            )
-        }
-        Text(
-            text = qty.toString(),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.padding(horizontal = 10.dp)
-        )
-        IconButton(onClick = onInc, modifier = Modifier.size(24.dp)) {
-            Icon(
-                Icons.Default.Add,
-                contentDescription = stringResource(R.string.increase_item_quantity),
-                modifier = Modifier.size(14.dp)
-            )
         }
     }
 }
@@ -340,8 +285,6 @@ private fun ProductCardContent(
     backgroundColor = 0xffF0F3F6)
 @Composable
 private fun Pizza_Qty0() {
-    val formatter = UsdMoneyFormatter(Locale.US)
-    val formatMoney: (Int) -> String = formatter::format
     LazyPizzaTheme {
         val item = ProductUi(
             id = "pizza_margherita",
@@ -355,7 +298,6 @@ private fun Pizza_Qty0() {
         PizzaCard(
             item = item,
             qty = 0,
-            formatMoney = formatMoney,
             callbacks = ProductCallbacks(
                 open = {},
                 add = {},
@@ -377,8 +319,6 @@ private fun Pizza_Qty0() {
     backgroundColor = 0xffF0F3F6)
 @Composable
 private fun Pizza_Qty2() {
-    val formatter = UsdMoneyFormatter(Locale.US)
-    val formatMoney: (Int) -> String = formatter::format
     LazyPizzaTheme {
         val item = ProductUi(
             id = "pizza_margherita",
@@ -392,7 +332,6 @@ private fun Pizza_Qty2() {
         PizzaCard(
             item = item,
             qty = 2,
-            formatMoney = formatMoney,
             callbacks = ProductCallbacks(
                 open = {},
                 add = {},
@@ -411,9 +350,6 @@ private fun Pizza_Qty2() {
 @Composable
 private fun Other_Qty0() {
     LazyPizzaTheme {
-        val formatter = UsdMoneyFormatter(Locale.US)
-        val formatMoney: (Int) -> String = formatter::format
-
         val drink = ProductUi(
             id = "drink_mineral",
             name = "Mineral Water",
@@ -426,7 +362,6 @@ private fun Other_Qty0() {
         OtherProductCard(
             item = drink,
             qty = 0,
-            formatMoney = formatMoney,
             callbacks = ProductCallbacks(
                 open = {},
                 add = {},
@@ -445,9 +380,6 @@ private fun Other_Qty0() {
 @Composable
 private fun Other_Qty2() {
     LazyPizzaTheme {
-        val formatter = UsdMoneyFormatter(Locale.US)
-        val formatMoney: (Int) -> String = formatter::format
-
         val drink = ProductUi(
             id = "drink_mineral",
             name = "Mineral Water",
@@ -460,7 +392,6 @@ private fun Other_Qty2() {
         OtherProductCard(
             item = drink,
             qty = 2,
-            formatMoney = formatMoney,
             callbacks = ProductCallbacks(
                 open = {},
                 add = {},

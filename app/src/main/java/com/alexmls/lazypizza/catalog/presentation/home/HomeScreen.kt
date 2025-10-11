@@ -53,7 +53,6 @@ import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
 import com.alexmls.lazypizza.catalog.presentation.model.SectionItemUi
 import com.alexmls.lazypizza.catalog.presentation.preview.PreviewProducts
 import com.alexmls.lazypizza.catalog.presentation.utils.CATEGORY_ORDER
-import com.alexmls.lazypizza.catalog.presentation.utils.UsdMoneyFormatter
 import com.alexmls.lazypizza.catalog.presentation.utils.buildSectionStartIndex
 import com.alexmls.lazypizza.catalog.presentation.utils.displayName
 import com.alexmls.lazypizza.catalog.presentation.utils.titleRes
@@ -69,7 +68,6 @@ import com.alexmls.lazypizza.core.designsystem.rememberLayoutType
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import java.util.Locale
 
 @Composable
 fun HomeRoot(
@@ -78,9 +76,6 @@ fun HomeRoot(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    val formatter = remember { UsdMoneyFormatter(Locale.US) }
-    val formatMoney: (Int) -> String = remember(formatter) { formatter::format }
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -96,7 +91,6 @@ fun HomeRoot(
 
     HomeScreen(
         state = state,
-        formatMoney = formatMoney,
         onAction = viewModel::onAction,
         modifier = modifier
     )
@@ -105,7 +99,6 @@ fun HomeRoot(
 @Composable
 fun HomeScreen(
     state: HomeState,
-    formatMoney: (Int) -> String,
     onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
     layout: LayoutType = rememberLayoutType()
@@ -190,7 +183,6 @@ fun HomeScreen(
                         mobile = {
                             CategorizedLazyColumn(
                                 sections = sections,
-                                formatMoney = formatMoney,
                                 onAction = onAction,
                                 listState = listState
                             )
@@ -198,7 +190,6 @@ fun HomeScreen(
                         wide = {
                             CategorizedGrid2Cols(
                                 sections = sections,
-                                formatMoney = formatMoney,
                                 onAction = onAction,
                                 gridState = gridState
                             )
@@ -277,7 +268,6 @@ fun CategoryHeader(category: CategoryUi, modifier: Modifier = Modifier) {
 @Composable
 fun CategorizedLazyColumn(
     sections: List<CategorySectionUi>,
-    formatMoney: (Int) -> String,
     onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState()
@@ -332,7 +322,6 @@ fun CategorizedLazyColumn(
                         PizzaCard(
                             item = sectionItem.product,
                             qty = sectionItem.qty,
-                            formatMoney = formatMoney,
                             callbacks = callbacks,
                             modifier = cardModifier
                         )
@@ -341,7 +330,6 @@ fun CategorizedLazyColumn(
                         OtherProductCard(
                             item = sectionItem.product,
                             qty = sectionItem.qty,
-                            formatMoney = formatMoney,
                             callbacks = callbacks,
                             modifier = cardModifier
                         )
@@ -355,7 +343,6 @@ fun CategorizedLazyColumn(
 @Composable
 fun CategorizedGrid2Cols(
     sections: List<CategorySectionUi>,
-    formatMoney: (Int) -> String,
     onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
     gridState: LazyGridState = rememberLazyGridState()
@@ -408,7 +395,6 @@ fun CategorizedGrid2Cols(
                         PizzaCard(
                             item = sectionItem.product,
                             qty = sectionItem.qty,
-                            formatMoney = formatMoney,
                             callbacks = callbacks,
                             modifier = cardModifier
                         )
@@ -417,7 +403,6 @@ fun CategorizedGrid2Cols(
                         OtherProductCard(
                             item = sectionItem.product,
                             qty = sectionItem.qty,
-                            formatMoney = formatMoney,
                             callbacks = callbacks,
                             modifier = cardModifier
                         )
@@ -435,7 +420,6 @@ private fun HomePreview_Mobile() {
     LazyPizzaTheme {
         HomeScreen(
             state = state.copy(selected = null),
-            formatMoney = { cents -> UsdMoneyFormatter(Locale.US).format(cents) },
             onAction = {}
         )
     }
@@ -447,7 +431,6 @@ private fun HomePreview_Wide() {
     LazyPizzaTheme {
         HomeScreen(
             state = state,
-            formatMoney = { cents -> UsdMoneyFormatter(Locale.US).format(cents) },
             onAction = {},
             layout = LayoutType.Wide
         )
