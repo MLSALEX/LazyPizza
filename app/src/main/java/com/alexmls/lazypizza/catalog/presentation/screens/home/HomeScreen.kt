@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.catalog.presentation.home
+package com.alexmls.lazypizza.catalog.presentation.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

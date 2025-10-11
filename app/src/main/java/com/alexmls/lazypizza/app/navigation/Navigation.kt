@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.alexmls.lazypizza.catalog.presentation.home.HomeRoot
+import com.alexmls.lazypizza.catalog.presentation.screens.home.HomeRoot
 import kotlinx.serialization.Serializable
 
 sealed interface NavigationRoute  {

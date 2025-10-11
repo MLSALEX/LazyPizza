@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.catalog.presentation.home
+package com.alexmls.lazypizza.catalog.presentation.screens.home
 
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
 
