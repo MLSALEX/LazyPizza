@@ -4,8 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.alexmls.lazypizza.catalog.presentation.screens.home.HomeRoot
+import com.alexmls.lazypizza.catalog.presentation.screens.product_details.ProductDetailsRoot
+import com.alexmls.lazypizza.catalog.presentation.utils.toProductDetailsRoute
 import kotlinx.serialization.Serializable
 
 sealed interface NavigationRoute  {
@@ -13,7 +14,9 @@ sealed interface NavigationRoute  {
     data object Home : NavigationRoute
 
     @Serializable
-    data class ProductDetails(val id: String): NavigationRoute
+    data class ProductDetails(
+        val productId: String
+    ): NavigationRoute
 }
 
 @Composable
@@ -26,17 +29,16 @@ fun Navigation(
     ) {
         composable<NavigationRoute.Home>{
             HomeRoot(
-                onNavigateToDetails = { productId ->
-                    navController.navigate(NavigationRoute.ProductDetails(productId))
+                onNavigateToDetails = { productId: String ->
+                    navController.navigate(productId.toProductDetailsRoute())
                 }
             )
         }
         composable<NavigationRoute.ProductDetails> { entry ->
-            val args = entry.toRoute<NavigationRoute.ProductDetails>()
-//            ProductDetailsRoot(
-//                productId = args.id,
-//                onBack = { navController.navigateUp() }
-//            )
+            ProductDetailsRoot(
+                onBack = { navController.navigateUp() },
+                onAddToCart = { total, selected -> /* ... */ }
+            )
         }
     }
 }

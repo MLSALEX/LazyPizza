@@ -43,7 +43,7 @@ fun ProductImage(
         Image(
             painter = painterResource(R.drawable.bacon),
             contentDescription = contentDescription,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
             modifier = contentModifier.fillMaxSize()
         )
     } else {
@@ -53,7 +53,7 @@ fun ProductImage(
             placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
             error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
             modifier = contentModifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Fit
         )
     }
 }

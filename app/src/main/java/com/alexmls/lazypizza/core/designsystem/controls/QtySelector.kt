@@ -40,7 +40,7 @@ fun QtySelector(
     val iconSize = 14.dp
     val numberStyle = MaterialTheme.typography.titleMedium
 
-    val canDec = value > range.first
+    val canDec = value >= range.first
     val canInc = value < range.last
 
     Row(

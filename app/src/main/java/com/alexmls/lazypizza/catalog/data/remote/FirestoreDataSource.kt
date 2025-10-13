@@ -6,17 +6,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-data class RemoteProduct(
-    val id: String = "",
-    val name: String = "",
-    val description: String = "",
-    val price_cents: Int = 0,
-    val category: String = "",
-    val image_path: String? = null,
-    val image_url: String? = null,
-    val is_active: Boolean = true
-)
-
 class FirestoreProductDataSource(
     private val firestore: FirebaseFirestore
 ) {
@@ -32,6 +21,25 @@ class FirestoreProductDataSource(
                 trySend(list).isSuccess
             }
         awaitClose { registration.remove() }
+    }
+}
+
+class FirestoreToppingDataSource(
+    private val firestore: FirebaseFirestore
+) {
+    fun observeToppings(): Flow<List<RemoteTopping>> = callbackFlow {
+        val reg = firestore.collection("toppings")
+            .addSnapshotListener { snap, err ->
+                if (err != null) {
+                    close(err)
+                    return@addSnapshotListener
+                }
+                val list = snap?.documents.orEmpty()
+                    .mapNotNull { it.toObject(RemoteTopping::class.java) }
+                    .filter { it.is_active }
+                trySend(list).isSuccess
+            }
+        awaitClose { reg.remove() }
     }
 }
 

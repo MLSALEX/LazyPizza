@@ -78,7 +78,7 @@ fun LpSearchField(
                 unfocusedContainerColor = Color.Transparent,
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent,
-                cursorColor = MaterialTheme.colorScheme.secondary,
+                cursorColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
             ),
             modifier = modifier

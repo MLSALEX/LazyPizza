@@ -5,10 +5,17 @@ object RemoteAssets {
 }
 
 fun buildImageUrl(relativePath: String): String {
-    val trimmed = relativePath.trim().removePrefix("/")
-    val encoded = trimmed
-        .split('/')
-        .joinToString("/") { android.net.Uri.encode(it) }
+    // trim & remove leading slash
+    var p = relativePath.trim().removePrefix("/")
+
+    // collapse accidental double slashes
+    while ("//" in p) p = p.replace("//", "/")
+
+    // common folder typos → "toppings/"
+    p = p.replaceFirst("^topping[s]?/".toRegex(RegexOption.IGNORE_CASE), "toppings/")
+
+    // URL-encode each segment (preserves case for filenames like "Pepper Oni.png")
+    val encoded = p.split('/').joinToString("/") { android.net.Uri.encode(it) }
 
     return RemoteAssets.BASE + encoded
 }

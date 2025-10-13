@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,11 +49,13 @@ sealed interface NavBarConfig {
 fun NavBar(
     config: NavBarConfig,
     onClick: (NavBarAction) -> Unit,
+    modifier: Modifier = Modifier,
     barHeight: Dp = 64.dp,
-    modifier: Modifier = Modifier
 ) {
     TopAppBar(
         modifier = modifier.height(barHeight),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent),
         navigationIcon = {
             if (config is NavBarConfig.BackOnly) {
                 Box(
@@ -64,7 +67,8 @@ fun NavBar(
                     IconButton(onClick = { onClick(NavBarAction.Back) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
@@ -100,7 +104,8 @@ fun NavBar(
                             Icon(
                                 Icons.Outlined.Call,
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp))
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.secondary)
                             Spacer(Modifier.width(6.dp))
                             Text(
                                 text = config.phone,
@@ -116,7 +121,7 @@ fun NavBar(
     )
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(showBackground = true, backgroundColor = 0xFFFFFfff)
 @Composable
 private fun Preview_NavBar_TitleWithPhone() {
     LazyPizzaTheme {
