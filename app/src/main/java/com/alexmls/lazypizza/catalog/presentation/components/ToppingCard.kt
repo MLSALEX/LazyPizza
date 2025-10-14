@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -34,13 +33,6 @@ import com.alexmls.lazypizza.core.designsystem.card_style.rememberLpCardStyle
 import com.alexmls.lazypizza.core.designsystem.controls.QtySelector
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 
-@Immutable
-data class ToppingCallbacks(
-    val addOne: () -> Unit,
-    val inc: () -> Unit,
-    val decOrRemove: () -> Unit
-)
-
 private val cardWidth  = 121.dp
 private val cardHeight = 142.dp
 private val imageSize  = 56.dp
@@ -50,18 +42,22 @@ private val vPadding   = 10.dp
 fun ToppingCard(
     item: ToppingUi,
     qty: Int,
-    callbacks: ToppingCallbacks,
+    onAddOne: () -> Unit,
+    onInc: () -> Unit,
+    onDecOrRemove: () -> Unit,
     modifier: Modifier = Modifier,
     style: LpCardStyle = rememberLpCardStyle()
 ) {
-    val cb by rememberUpdatedState(callbacks)
+    val addOne by rememberUpdatedState(onAddOne)
+    val inc by rememberUpdatedState(onInc)
+    val decOrRemove by rememberUpdatedState(onDecOrRemove)
     val price = remember(item.priceCents) { UsdFormat.format(item.priceCents) }
 
     val isActive = qty > 0
 
     Card(
         onClick = {
-            if (!isActive) cb.addOne()
+            if (!isActive) addOne()
         },
         shape = style.shape,
         colors = CardDefaults.cardColors(
@@ -123,8 +119,8 @@ fun ToppingCard(
                     } else {
                         QtySelector(
                             value = qty,
-                            onInc = cb.inc,
-                            onDec = cb.decOrRemove,
+                            onInc = inc,
+                            onDec = decOrRemove,
                             range = 1..3,
                             width = 98.dp
                         )
@@ -153,11 +149,10 @@ private fun Topping_Default() {
                 imageUrl = "https://pl-coding.com/wp-content/uploads/lazypizza/topping/bacon.png",
                 maxUnits = 3
                 ),
-            qty = 0,
-            callbacks = ToppingCallbacks(
-                addOne = {},
-                inc = {},
-                decOrRemove = {}),
+                qty = 0,
+                onAddOne = {},
+                onInc = {},
+                onDecOrRemove = {},
             modifier = Modifier.padding(12.dp)
         )
     }
@@ -182,11 +177,9 @@ private fun Topping_Qty3() {
                 maxUnits = 3,
                 ),
             qty = 3,
-            callbacks = ToppingCallbacks(
-                addOne = {},
-                inc = {},
-                decOrRemove = {}
-            ),
+            onAddOne = {},
+            onInc = {},
+            onDecOrRemove = {},
             modifier = Modifier.padding(12.dp)
         )
     }

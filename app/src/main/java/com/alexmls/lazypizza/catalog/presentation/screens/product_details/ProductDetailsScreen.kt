@@ -23,24 +23,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alexmls.lazypizza.catalog.presentation.components.ButtonOverlay
 import com.alexmls.lazypizza.catalog.presentation.components.ProductImage
-import com.alexmls.lazypizza.catalog.presentation.components.ToppingCallbacks
 import com.alexmls.lazypizza.catalog.presentation.components.ToppingCard
 import com.alexmls.lazypizza.catalog.presentation.model.ToppingUi
 import com.alexmls.lazypizza.catalog.presentation.preview.PreviewToppings
 import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
 import com.alexmls.lazypizza.core.designsystem.Adaptive
+import com.alexmls.lazypizza.core.designsystem.card_style.rememberLpCardStyle
 import com.alexmls.lazypizza.core.designsystem.components.NavBar
 import com.alexmls.lazypizza.core.designsystem.components.NavBarAction
 import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
@@ -83,9 +88,11 @@ fun ProductDetailsScreen(
     val totalText by remember(state.totalCents) {
         derivedStateOf { "Add to Cart for ${UsdFormat.format(state.totalCents)}" }
     }
+    val topProps = rememberTopProps(state)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             NavBar(
                 config = NavBarConfig.BackOnly,
@@ -97,7 +104,9 @@ fun ProductDetailsScreen(
             layout = layout,
             mobile = {
                 MobileContent(
-                    state = state,
+                    top = topProps,
+                    toppings = state.toppings,
+                    qtyOf = state::qtyOf,
                     onAction = onAction,
                     contentPadding = innerPadding,
                     buttonText = totalText
@@ -105,7 +114,9 @@ fun ProductDetailsScreen(
             },
             wide = {
                 WideContent(
-                    state = state,
+                    top = topProps,
+                    toppings = state.toppings,
+                    qtyOf = state::qtyOf,
                     onAction = onAction,
                     contentPadding = innerPadding,
                     buttonText = totalText
@@ -119,7 +130,9 @@ fun ProductDetailsScreen(
 
 @Composable
 private fun MobileContent(
-    state: ProductDetailsScreenState,
+    top: TopProps,
+    toppings: List<ToppingUi>,
+    qtyOf: (String) -> Int,
     onAction: (ProductDetailsScreenAction) -> Unit,
     contentPadding: PaddingValues,
     buttonText: String
@@ -132,23 +145,25 @@ private fun MobileContent(
             .padding(contentPadding)
     ) {
         TopSection(
-            title = state.title,
-            description = state.description,
-            imageUrl = state.imageUrl,
+            title = top.title,
+            description = top.description,
+            imageUrl = top.imageUrl,
+            style = TopSectionStyle.Mobile,
             modifier = Modifier
                 .weight(0.7f, fill = true)
                 .fillMaxWidth()
         )
 
             ToppingsSection(
-                toppings = state.toppings,
-                qtyOf = state::qtyOf,
+                toppings = toppings,
+                qtyOf = qtyOf,
                 onAction = onAction,
                 gridState = gridState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f, fill = true),
-                buttonText = buttonText
+                buttonText = buttonText,
+                shape = RectangleShape
             )
 
     }
@@ -158,7 +173,9 @@ private fun MobileContent(
 
 @Composable
 private fun WideContent(
-    state: ProductDetailsScreenState,
+    top: TopProps,
+    toppings: List<ToppingUi>,
+    qtyOf: (String) -> Int,
     onAction: (ProductDetailsScreenAction) -> Unit,
     contentPadding: PaddingValues,
     buttonText: String
@@ -182,9 +199,10 @@ private fun WideContent(
                     .fillMaxWidth()
             ) {
                 TopSection(
-                    title = state.title,
-                    description = state.description,
-                    imageUrl = state.imageUrl
+                    title = top.title,
+                    description = top.description,
+                    imageUrl = top.imageUrl,
+                    style = TopSectionStyle.Wide
                 )
             }
 
@@ -200,14 +218,18 @@ private fun WideContent(
                 .fillMaxHeight()
             ) {
                 ToppingsSection(
-                    toppings = state.toppings,
-                    qtyOf = state::qtyOf,
+                    toppings = toppings,
+                    qtyOf = qtyOf,
                     onAction = onAction,
                     gridState = gridState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f, fill = true),
-                    buttonText = buttonText
+                    buttonText = buttonText,
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        bottomStart = 16.dp
+                    )
                 )
             }
     }
@@ -215,63 +237,123 @@ private fun WideContent(
 
 /* ---------- Pieces ---------- */
 
+enum class TopSectionStyle { Mobile, Wide }
+
 @Composable
-private fun TopSection(
+fun TopSection(
     title: String,
     description: String,
     imageUrl: String,
+    style: TopSectionStyle,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier
-            .fillMaxSize()
-    ) {
-        Box(
+    Column(modifier.fillMaxSize()) {
+        ImageBlock(
+            title = title,
+            imageUrl = imageUrl,
+            style = style,
             modifier = Modifier
                 .weight(2f, fill = true)
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .cutCornerOverlay(
-                    corner = Corner.BottomEnd,
-                    radius = 16.dp,
-                    overlayColor = MaterialTheme.colorScheme.background
-                )
-        ) {
-            ProductImage(
-                url = imageUrl,
-                contentDescription = title,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
+        )
+        InfoBlock(
+            title = title,
+            description = description,
+            style = style,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(
-                    elevation = 12.dp,
-                    spotColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.06f),
-                    ambientColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.06f)
-                )
-                .background(MaterialTheme.colorScheme.background)
-                .cutCornerOverlay(
-                    corner = Corner.TopStart,
-                    radius = 16.dp,
-                    overlayColor = MaterialTheme.colorScheme.surface
-                )
-        ) {
-            Column(Modifier.padding(16.dp)) {
-                Text(title, style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
+@Composable
+private fun ImageBlock(
+    title: String,
+    imageUrl: String,
+    style: TopSectionStyle,
+    modifier: Modifier = Modifier
+) {
+    val bgColor = if (style == TopSectionStyle.Mobile)
+        MaterialTheme.colorScheme.surface else Color.Transparent
+
+    val overlayColor = if (style == TopSectionStyle.Mobile)
+        MaterialTheme.colorScheme.background else Color.Unspecified
+
+    Box(
+        modifier = modifier
+            .background(bgColor)
+            .cutCornerOverlay(
+                corner = Corner.BottomEnd,
+                radius = 16.dp,
+                overlayColor = overlayColor,
+                enabled = (style == TopSectionStyle.Mobile)
+            )
+    ) {
+        ProductImage(
+            url = imageUrl,
+            contentDescription = title,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun InfoBlock(
+    title: String,
+    description: String,
+    style: TopSectionStyle,
+    modifier: Modifier = Modifier
+) {
+    val bgColor = if (style == TopSectionStyle.Mobile)
+        MaterialTheme.colorScheme.background else Color.Transparent
+
+    val overlayColor = if (style == TopSectionStyle.Mobile)
+        MaterialTheme.colorScheme.surface else Color.Unspecified
+
+    val needsShadow = style == TopSectionStyle.Mobile
+
+    Box(
+        modifier = modifier
+            .then(
+                if (needsShadow) {
+                    Modifier.shadow(
+                        elevation = 12.dp,
+                        spotColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.06f),
+                        ambientColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.06f)
+                    )
+                } else Modifier
+            )
+            .background(bgColor)
+            .cutCornerOverlay(
+                corner = Corner.TopStart,
+                radius = 16.dp,
+                overlayColor = overlayColor,
+                enabled = (style == TopSectionStyle.Mobile)
+            )
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Text(title, style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(6.dp))
+            Text(
+                description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
         }
     }
 }
+
+@Immutable
+data class TopProps(
+    val title: String,
+    val description: String,
+    val imageUrl: String
+)
+
+@Composable
+private fun rememberTopProps(state: ProductDetailsScreenState): TopProps =
+    remember(state.title, state.description, state.imageUrl) {
+        TopProps(state.title, state.description, state.imageUrl)
+    }
 
 @Composable
 private fun ToppingsSection(
@@ -280,16 +362,17 @@ private fun ToppingsSection(
     onAction: (ProductDetailsScreenAction) -> Unit,
     gridState: LazyGridState,
     modifier: Modifier = Modifier,
-    buttonText: String
+    buttonText: String,
+    shape: Shape
 ) {
-    val shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
+    val cardStyle = rememberLpCardStyle()
     Box(
         modifier = modifier
             .clip(shape)
             .background(MaterialTheme.colorScheme.surface)
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
@@ -313,20 +396,25 @@ private fun ToppingsSection(
             ) {
                 items(
                     items = toppings,
-                    key = { it.id }
+                    key = { it.id },
+                    contentType = { "topping" }
                 ) { item ->
-                    val qty = qtyOf(item.id)
-                    val cb = remember(item.id) {
-                        ToppingCallbacks(
-                            addOne = { onAction(ProductDetailsScreenAction.AddOne(item.id)) },
-                            inc = { onAction(ProductDetailsScreenAction.Inc(item.id)) },
-                            decOrRemove = { onAction(ProductDetailsScreenAction.DecOrRemove(item.id)) }
-                        )
-                    }
+                    val id = item.id
+                    val qty = qtyOf(id)
+
+                    val onActionState by rememberUpdatedState(onAction)
+
+                    val addOne = remember(id, onActionState) { { onActionState(ProductDetailsScreenAction.AddOne(id)) } }
+                    val inc =    remember(id, onActionState) { { onActionState(ProductDetailsScreenAction.Inc(id)) } }
+                    val decOrRemove = remember(id, onActionState) { { onActionState(ProductDetailsScreenAction.DecOrRemove(id)) } }
+
                     ToppingCard(
                         item = item,
                         qty = qty,
-                        callbacks = cb
+                        onAddOne = addOne,
+                        onInc = inc,
+                        onDecOrRemove = decOrRemove,
+                        style = cardStyle
                     )
                 }
             }

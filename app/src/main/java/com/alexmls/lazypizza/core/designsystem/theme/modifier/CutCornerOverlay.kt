@@ -24,7 +24,11 @@ private fun oneCornerShape(corner: Corner, radius: Dp) = when (corner) {
 fun Modifier.cutCornerOverlay(
     corner: Corner,
     radius: Dp,
-    overlayColor: Color
-): Modifier = this
-    .clip(oneCornerShape(corner, radius))
-    .background(overlayColor)
+    overlayColor: Color,
+    enabled: Boolean = true
+): Modifier = if (enabled) {
+    this.clip(oneCornerShape(corner, radius))
+        .background(overlayColor)
+} else {
+    this
+}

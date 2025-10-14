@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -125,9 +126,9 @@ fun HomeScreen(
             }
         }
     }
-    val listState  = rememberLazyListState()
-    val gridState  = rememberLazyGridState()
-    val scope      = rememberCoroutineScope()
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
+    val scope = rememberCoroutineScope()
 
     val sectionStart by remember(sections) {
         derivedStateOf { buildSectionStartIndex(sections) }
