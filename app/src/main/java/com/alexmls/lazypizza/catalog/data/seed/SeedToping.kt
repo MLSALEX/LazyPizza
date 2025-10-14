@@ -15,7 +15,7 @@ val seedToppings: List<SeedTopping> = listOf(
     SeedTopping("tomato", "Tomato", 50, "topping/tomato.png"),
     SeedTopping("olives", "Olives", 50, "topping/olive.png"),
     SeedTopping("pepperoni", "Pepperoni", 100, "topping/pepperoni.png"),
-    SeedTopping("mushrooms", "Mushrooms", 50, "topping/mushroom.png"),
+    SeedTopping("mushrooms", "Mushrooms", 50, "topping/mashroom.png"),
     SeedTopping("basil", "Basil", 50, "topping/basil.png"),
     SeedTopping("pineapple", "Pineapple", 100, "topping/pineapple.png"),
     SeedTopping("onion", "Onion", 50, "topping/onion.png"),
