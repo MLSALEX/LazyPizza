@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -27,12 +26,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alexmls.lazypizza.catalog.presentation.components.ButtonOverlay
 import com.alexmls.lazypizza.catalog.presentation.components.ProductImage
 import com.alexmls.lazypizza.catalog.presentation.components.ToppingCallbacks
 import com.alexmls.lazypizza.catalog.presentation.components.ToppingCard
@@ -40,7 +41,6 @@ import com.alexmls.lazypizza.catalog.presentation.model.ToppingUi
 import com.alexmls.lazypizza.catalog.presentation.preview.PreviewToppings
 import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
 import com.alexmls.lazypizza.core.designsystem.Adaptive
-import com.alexmls.lazypizza.core.designsystem.components.LpPrimaryButton
 import com.alexmls.lazypizza.core.designsystem.components.NavBar
 import com.alexmls.lazypizza.core.designsystem.components.NavBarAction
 import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
@@ -100,7 +100,7 @@ fun ProductDetailsScreen(
                     state = state,
                     onAction = onAction,
                     contentPadding = innerPadding,
-                    ctaText = totalText
+                    buttonText = totalText
                 )
             },
             wide = {
@@ -108,7 +108,7 @@ fun ProductDetailsScreen(
                     state = state,
                     onAction = onAction,
                     contentPadding = innerPadding,
-                    ctaText = totalText
+                    buttonText = totalText
                 )
             }
         )
@@ -122,14 +122,13 @@ private fun MobileContent(
     state: ProductDetailsScreenState,
     onAction: (ProductDetailsScreenAction) -> Unit,
     contentPadding: PaddingValues,
-    ctaText: String
+    buttonText: String
 ) {
     val gridState = rememberLazyGridState()
 
     Column(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
             .padding(contentPadding)
     ) {
         TopSection(
@@ -137,7 +136,7 @@ private fun MobileContent(
             description = state.description,
             imageUrl = state.imageUrl,
             modifier = Modifier
-                .weight(1f, fill = true)
+                .weight(0.7f, fill = true)
                 .fillMaxWidth()
         )
 
@@ -149,7 +148,7 @@ private fun MobileContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f, fill = true),
-                ctaText = ctaText
+                buttonText = buttonText
             )
 
     }
@@ -162,7 +161,7 @@ private fun WideContent(
     state: ProductDetailsScreenState,
     onAction: (ProductDetailsScreenAction) -> Unit,
     contentPadding: PaddingValues,
-    ctaText: String
+    buttonText: String
 ) {
     val gridState = rememberLazyGridState()
 
@@ -170,19 +169,27 @@ private fun WideContent(
         Modifier
             .fillMaxSize()
             .padding(contentPadding)
+            .padding(bottom = 100.dp)
     ) {
         Column(
             Modifier
                 .weight(1f)
                 .fillMaxHeight()
         ) {
-            TopSection(
-                title = state.title,
-                description = state.description,
-                imageUrl = state.imageUrl
-            )
+            Box(
+                Modifier
+                    .weight(1f, fill = true)
+                    .fillMaxWidth()
+            ) {
+                TopSection(
+                    title = state.title,
+                    description = state.description,
+                    imageUrl = state.imageUrl
+                )
+            }
+
             Spacer(Modifier.height(24.dp)
-                .weight(1f))
+                .weight(0.9f))
         }
 
         Spacer(Modifier.width(24.dp))
@@ -199,9 +206,8 @@ private fun WideContent(
                     gridState = gridState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f, fill = true)
-                        .padding(bottom = 98.dp),
-                    ctaText = ctaText
+                        .weight(1f, fill = true),
+                    buttonText = buttonText
                 )
             }
     }
@@ -255,7 +261,7 @@ private fun TopSection(
                 )
         ) {
             Column(Modifier.padding(16.dp)) {
-                Text(title, style = MaterialTheme.typography.headlineSmall)
+                Text(title, style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.height(6.dp))
                 Text(
                     description,
@@ -274,67 +280,72 @@ private fun ToppingsSection(
     onAction: (ProductDetailsScreenAction) -> Unit,
     gridState: LazyGridState,
     modifier: Modifier = Modifier,
-    ctaText: String
+    buttonText: String
 ) {
     val shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
-    Column(
+    Box(
         modifier = modifier
             .clip(shape)
-            .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface)
-            .padding( 16.dp)
-
     ) {
-        Text(
-            text = "ADD EXTRA TOPPINGS",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        LazyVerticalGrid(
-            state = gridState,
-            columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxWidth()
-                .weight(1f, fill = true),
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
-            items(
-                items = toppings,
-                key = { it.id }
-            ) { item ->
-                val qty = qtyOf(item.id)
-                val cb = remember(item.id) {
-                    ToppingCallbacks(
-                        addOne = { onAction(ProductDetailsScreenAction.AddOne(item.id)) },
-                        inc = { onAction(ProductDetailsScreenAction.Inc(item.id)) },
-                        decOrRemove = { onAction(ProductDetailsScreenAction.DecOrRemove(item.id)) }
+            Text(
+                text = "ADD EXTRA TOPPINGS",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+            LazyVerticalGrid(
+                state = gridState,
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(
+                    top = 8.dp,
+                    bottom = 68.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxWidth()
+                    .weight(1f, fill = true),
+            ) {
+                items(
+                    items = toppings,
+                    key = { it.id }
+                ) { item ->
+                    val qty = qtyOf(item.id)
+                    val cb = remember(item.id) {
+                        ToppingCallbacks(
+                            addOne = { onAction(ProductDetailsScreenAction.AddOne(item.id)) },
+                            inc = { onAction(ProductDetailsScreenAction.Inc(item.id)) },
+                            decOrRemove = { onAction(ProductDetailsScreenAction.DecOrRemove(item.id)) }
+                        )
+                    }
+                    ToppingCard(
+                        item = item,
+                        qty = qty,
+                        callbacks = cb
                     )
                 }
-                ToppingCard(
-                    item = item,
-                    qty = qty,
-                    callbacks = cb
-                )
             }
+            Spacer(Modifier.height(24.dp))
         }
 
-        LpPrimaryButton(
-            text = ctaText,
+        ButtonOverlay(
+            text = buttonText,
             onClick = { onAction(ProductDetailsScreenAction.ClickAddToCart) },
-            height = 44.dp,
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .navigationBarsPadding()
         )
     }
 }
 
 /* ---------- Preview ---------- */
 
-@Preview(apiLevel = 35, widthDp = 412, heightDp = 800, showBackground = true)
+@Preview(apiLevel = 35, widthDp = 412, heightDp = 917, showBackground = true)
 @Composable
 private fun ProductDetailsPreview_Mobile() {
     LazyPizzaTheme {

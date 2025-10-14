@@ -19,11 +19,11 @@ val Outline50 = Color(0xFFE6E7ED).copy(alpha = 0.5f)
 
 val Primary = Color(0xFFF36B50)
 val Primary8 = Color(0xFFF36B50).copy(alpha = 0.08f)
-val PrimaryGradientStart = Color(0xFFFF966F)
-val PrimaryGradientEnd = Primary
+val PrimaryGradientEnd = Color(0xFFFF966F)
+val PrimaryGradientStart = Primary
 
 object BrandColors {
     // Gradients
-    val btGradient: Brush      = Brush.horizontalGradient(listOf(PrimaryGradientStart , PrimaryGradientEnd))
+    val btGradient: Brush      = Brush.horizontalGradient(listOf(PrimaryGradientStart, PrimaryGradientEnd))
 }
 

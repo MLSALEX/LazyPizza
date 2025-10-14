@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
@@ -49,11 +47,10 @@ sealed interface NavBarConfig {
 fun NavBar(
     config: NavBarConfig,
     onClick: (NavBarAction) -> Unit,
-    modifier: Modifier = Modifier,
-    barHeight: Dp = 64.dp,
+    modifier: Modifier = Modifier
 ) {
     TopAppBar(
-        modifier = modifier.height(barHeight),
+        modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent),
         navigationIcon = {
@@ -80,7 +77,6 @@ fun NavBar(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight()
                             .padding(end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {

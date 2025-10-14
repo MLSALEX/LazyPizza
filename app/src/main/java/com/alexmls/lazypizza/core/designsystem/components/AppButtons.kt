@@ -35,7 +35,7 @@ fun LpPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    height: Dp = 40.dp,
+    height: Dp = 48.dp,
 ) {
 
     val containerBrush: Brush = BrandColors.btGradient
