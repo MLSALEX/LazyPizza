@@ -4,12 +4,13 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.catalog.presentation.model.ToppingUi
 import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
@@ -33,7 +35,6 @@ import com.alexmls.lazypizza.core.designsystem.card_style.rememberLpCardStyle
 import com.alexmls.lazypizza.core.designsystem.controls.QtySelector
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 
-private val cardWidth  = 121.dp
 private val cardHeight = 142.dp
 private val imageSize  = 56.dp
 private val vPadding   = 10.dp
@@ -46,7 +47,8 @@ fun ToppingCard(
     onInc: () -> Unit,
     onDecOrRemove: () -> Unit,
     modifier: Modifier = Modifier,
-    style: LpCardStyle = rememberLpCardStyle()
+    style: LpCardStyle = rememberLpCardStyle(),
+    maxCardWidth: Dp = 320.dp
 ) {
     val addOne by rememberUpdatedState(onAddOne)
     val inc by rememberUpdatedState(onInc)
@@ -66,7 +68,9 @@ fun ToppingCard(
         ),
         border = if (isActive) style.borderActive else style.borderDefault,
         modifier = modifier
-            .requiredWidth(cardWidth)
+            .fillMaxWidth()
+            .widthIn(max = maxCardWidth)
+            .defaultMinSize(minHeight = cardHeight)
             .requiredHeight(cardHeight)
             .shadow(
                 elevation = 16.dp,

@@ -186,7 +186,6 @@ private fun WideContent(
         Modifier
             .fillMaxSize()
             .padding(contentPadding)
-            .padding(bottom = 100.dp)
     ) {
         Column(
             Modifier
@@ -414,7 +413,8 @@ private fun ToppingsSection(
                         onAddOne = addOne,
                         onInc = inc,
                         onDecOrRemove = decOrRemove,
-                        style = cardStyle
+                        style = cardStyle,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
