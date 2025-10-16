@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -134,70 +133,63 @@ fun HomeScreen(
         derivedStateOf { buildSectionStartIndex(sections) }
     }
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            NavBar(
-                config = NavBarConfig.TitleWithPhone(state.title, state.phone),
-                onClick = { navAction ->
-                    if (navAction is NavBarAction.Phone) {
-                        act(HomeAction.ClickPhone(state.phone))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        NavBar(
+            config = NavBarConfig.TitleWithPhone(state.title, state.phone),
+            onClick = { navAction ->
+                if (navAction is NavBarAction.Phone) {
+                    act(HomeAction.ClickPhone(state.phone))
+                }
+            }
+        )
+        HeroBanner(modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+        )
+        LpSearchField(
+            query = state.search,
+            onQueryChange = { query -> act(HomeAction.SearchChanged(query))  },
+            modifier = Modifier.fillMaxWidth()
+        )
+        CategoryList(
+            categories = state.categories,
+            onCategoryClick = { cat ->
+                val target = sectionStart[cat] ?: return@CategoryList
+                scope.launch {
+                    if (layout == LayoutType.Wide) {
+                        gridState.animateScrollToItem(target)
+                    } else {
+                        listState.animateScrollToItem(target)
                     }
                 }
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-        ) {
-            HeroBanner(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-            )
-            LpSearchField(
-                query = state.search,
-                onQueryChange = { query -> act(HomeAction.SearchChanged(query))  },
-                modifier = Modifier.fillMaxWidth()
-            )
-            CategoryList(
-                categories = state.categories,
-                onCategoryClick = { cat ->
-                    val target = sectionStart[cat] ?: return@CategoryList
-                    scope.launch {
-                        if (layout == LayoutType.Wide) {
-                            gridState.animateScrollToItem(target)
-                        } else {
-                            listState.animateScrollToItem(target)
-                        }
-                    }
-                }
-            )
+            }
+        )
 
-            Box(Modifier.weight(1f)) {
-                if (filteredItems.isEmpty()) {
-                    NoResultsMsg()
-                } else {
-                    Adaptive(
-                        layout = layout,
-                        mobile = {
-                            CategorizedLazyColumn(
-                                sections = sections,
-                                onAction = onAction,
-                                listState = listState
-                            )
-                        },
-                        wide = {
-                            CategorizedGrid2Cols(
-                                sections = sections,
-                                onAction = onAction,
-                                gridState = gridState
-                            )
-                        }
-                    )
-                }
+        Box(Modifier.weight(1f)) {
+            if (filteredItems.isEmpty()) {
+                NoResultsMsg()
+            } else {
+                Adaptive(
+                    layout = layout,
+                    mobile = {
+                        CategorizedLazyColumn(
+                            sections = sections,
+                            onAction = onAction,
+                            listState = listState
+                        )
+                    },
+                    wide = {
+                        CategorizedGrid2Cols(
+                            sections = sections,
+                            onAction = onAction,
+                            gridState = gridState
+                        )
+                    }
+                )
             }
         }
     }

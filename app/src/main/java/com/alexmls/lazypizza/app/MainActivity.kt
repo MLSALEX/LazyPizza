@@ -7,8 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.compose.rememberNavController
-import com.alexmls.lazypizza.app.navigation.Navigation
+import com.alexmls.lazypizza.app.presentation.shell.MainRoot
 import com.alexmls.lazypizza.catalog.data.seed.ProductSeeder
 import com.alexmls.lazypizza.catalog.data.seed.seedProducts
 import com.alexmls.lazypizza.catalog.data.seed.seedToppings
@@ -47,8 +46,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LazyPizzaTheme {
-                val navController = rememberNavController()
-                Navigation(navController = navController)
+                MainRoot()
             }
         }
     }
