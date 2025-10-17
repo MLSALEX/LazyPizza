@@ -18,16 +18,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.app.navigation.NavTab
 import com.alexmls.lazypizza.app.navigation.NavigationBarState
 import com.alexmls.lazypizza.app.navigation.utils.iconRes
 import com.alexmls.lazypizza.app.navigation.utils.labelRes
 import com.alexmls.lazypizza.app.presentation.shell.components.TabItem
-import com.alexmls.lazypizza.core.designsystem.components.DropShadowAbove
 
 @Composable
 fun BottomBar(
@@ -53,18 +55,20 @@ fun BottomBar(
                 )
             )
     ) {
-        DropShadowAbove(
-            modifier = Modifier.align(Alignment.TopCenter),
-            color = Color(0x0F03131F),
-            offsetY = (-4).dp,
-            blur = 16.dp
-        )
-
         Surface(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                .fillMaxWidth()
+                .dropShadow(
+                    shape = topOnly,
+                    shadow = Shadow(
+                        radius = 16.dp,
+                        spread = 0.dp,
+                        color = Color(0x0F03131F),
+                        offset = DpOffset(x = 0.dp, y = (-4).dp)
+                    )
+                ),
             shape = topOnly,
-            color = MaterialTheme.colorScheme.surface,
-            shadowElevation = 8.dp
+            color = MaterialTheme.colorScheme.surface
         ) {
             Row(
                 modifier = Modifier
