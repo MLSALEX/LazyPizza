@@ -19,10 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.core.designsystem.theme.BrandColors
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
@@ -37,27 +41,41 @@ fun LpPrimaryButton(
     enabled: Boolean = true,
     height: Dp = 48.dp,
 ) {
-
-    val containerBrush: Brush = BrandColors.btGradient
+    val gradient: Brush = BrandColors.btGradient
 
     val bgModifier = if (enabled) {
-        Modifier.background(containerBrush)
+        gradient
     } else {
-        Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)
+        SolidColor(MaterialTheme.colorScheme.surfaceVariant)
     }
 
     Button(
         onClick = onClick,
         enabled = enabled,
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 0.dp, pressedElevation = 0.dp,
+            focusedElevation = 0.dp, hoveredElevation = 0.dp, disabledElevation = 0.dp
+        ),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
             disabledContainerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         ),
         contentPadding = ButtonDefaults.ContentPadding,
         modifier = modifier
+            .dropShadow(
+                shape = pillShape,
+                shadow = Shadow(
+                    radius = 6.dp,
+                    spread = 0.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    offset = DpOffset(x = 0.dp, y = (4).dp),
+                    alpha  = if (enabled) 0.25f else 0f
+                )
+            )
             .clip(pillShape)
+            .background(bgModifier)
             .height(height)
-            .then(bgModifier)
     ) {
        Text(
            text = text,
