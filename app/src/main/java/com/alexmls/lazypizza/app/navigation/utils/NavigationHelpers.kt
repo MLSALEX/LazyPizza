@@ -9,14 +9,13 @@ import com.alexmls.lazypizza.app.navigation.NavTab
 
 
 fun navigateToTab(navController: NavHostController, tab: NavTab) {
-    navController.navigate(
-        when (tab) {
+    val dest = when (tab) {
             NavTab.Menu -> NavDestination.Menu
             NavTab.Cart -> NavDestination.Cart
             NavTab.History -> NavDestination.History
         }
-    ) {
-        popUpTo(navController.graph.startDestinationId) { inclusive = false }
+    navController.navigate(dest) {
+        popUpTo(0) { inclusive = true }
         launchSingleTop = true
         restoreState = false
     }

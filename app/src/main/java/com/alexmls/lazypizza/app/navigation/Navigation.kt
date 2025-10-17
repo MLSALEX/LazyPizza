@@ -11,6 +11,8 @@ import androidx.navigation.compose.composable
 import com.alexmls.lazypizza.catalog.presentation.screens.home.HomeRoot
 import com.alexmls.lazypizza.catalog.presentation.screens.product_details.ProductDetailsRoot
 import com.alexmls.lazypizza.app.navigation.utils.toProductDetailsRoute
+import com.alexmls.lazypizza.catalog.presentation.screens.cart.CartRoot
+import com.alexmls.lazypizza.catalog.presentation.screens.history.HistoryRoot
 import kotlinx.serialization.Serializable
 
 sealed interface NavDestination  {
@@ -59,8 +61,8 @@ fun Navigation(
                 }
             )
         }
-//        composable<NavDestination.Cart>    { CartRoot() }
-//        composable<NavDestination.History> { HistoryRoot() }
+        composable<NavDestination.Cart>    { CartRoot() }
+        composable<NavDestination.History> { HistoryRoot() }
         composable<NavDestination.ProductDetails> { entry ->
             ProductDetailsRoot(
                 onBack = { navController.navigateUp() },

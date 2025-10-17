@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -47,11 +48,28 @@ fun MainScreen(
     val backStack by navController.currentBackStackEntryAsState()
     val showBar = backStack?.destination?.hasRoute<NavDestination.ProductDetails>() != true
 
+    LaunchedEffect(backStack?.destination) {
+        when {
+            backStack?.destination?.hasRoute<NavDestination.Menu>() == true ->
+                onSelectTab(NavTab.Menu)
+            backStack?.destination?.hasRoute<NavDestination.Cart>() == true ->
+                onSelectTab(NavTab.Cart)
+            backStack?.destination?.hasRoute<NavDestination.History>() == true ->
+                onSelectTab(NavTab.History)
+        }
+    }
+
     val onTabClick: (NavTab) -> Unit = remember(state.activeTab) {
         { tab ->
             if (state.activeTab != tab) {
                 onSelectTab(tab)
                 navigateToTab(navController, tab)
+            } else {
+                when (tab) {
+                    NavTab.Menu    -> navController.popBackStack(route = NavDestination.Menu, inclusive = false)
+                    NavTab.Cart    -> navController.popBackStack(route = NavDestination.Cart, inclusive = false)
+                    NavTab.History -> navController.popBackStack(route = NavDestination.History, inclusive = false)
+                }
             }
         }
     }
