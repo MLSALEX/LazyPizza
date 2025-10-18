@@ -1,18 +1,25 @@
 package com.alexmls.lazypizza.core.designsystem.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,23 +28,31 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumBold
+import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
 
+@Immutable
 sealed interface NavBarAction {
     data object Back : NavBarAction
     data class Phone(val number: String) : NavBarAction
 }
 
+@Immutable
 sealed interface NavBarConfig {
+    data class TitleCenter(val title: String) : NavBarConfig
     data class TitleWithPhone(val title: String, val phone: String) : NavBarConfig
     data object BackOnly : NavBarConfig
 }
@@ -47,74 +62,122 @@ sealed interface NavBarConfig {
 fun NavBar(
     config: NavBarConfig,
     onClick: (NavBarAction) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    TopAppBar(
+    val colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+
+    when (config) {
+        is NavBarConfig.TitleCenter -> {
+            CenterAlignedTopAppBar(
+                colors = colors,
+                title = {
+                    Text(
+                        text = config.title,
+                        style = MaterialTheme.typography.bodyMediumMedium,
+                        modifier = Modifier.semantics { heading() }
+                    )
+                }
+            )
+        }
+
+        is NavBarConfig.BackOnly -> {
+            TopAppBar(
+                colors = colors,
+                navigationIcon = { BackButton { onClick(NavBarAction.Back) } },
+                title = {}
+            )
+        }
+
+        is NavBarConfig.TitleWithPhone -> {
+            PlainTopBar(
+                modifier = modifier
+            ) {
+                BrandTitle(text = config.title)
+                Spacer(Modifier.weight(1f))
+                PhonePill(
+                    phone = config.phone,
+                    onClick = { onClick(NavBarAction.Phone(config.phone)) }
+                )
+            }
+        }
+    }
+}
+@Composable
+private fun PlainTopBar(
+    modifier: Modifier = Modifier,
+    barHeight: Dp = 64.dp,
+    content: @Composable RowScope.() -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .height(barHeight)
+            .padding( 0.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ){
+        content()
+    }
+}
+@Composable
+private fun BackButton(onBack: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(56.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        IconButton(onClick = onBack) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        }
+    }
+}
+@Composable
+private fun BrandTitle(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
         modifier = modifier,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent),
-        navigationIcon = {
-            if (config is NavBarConfig.BackOnly) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(56.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    IconButton(onClick = { onClick(NavBarAction.Back) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                }
-            }
-        },
-        title = {
-            when (config) {
-                is NavBarConfig.TitleWithPhone -> {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_logo),
-                            contentDescription = null,
-                            tint = Color.Unspecified,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(config.title, style = MaterialTheme.typography.bodyMediumBold)
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_logo),
+            contentDescription = null,
+            tint = Color.Unspecified,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMediumBold
+        )
+    }
+}
 
-                        Spacer(Modifier.weight(1f))
-
-                        Row(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { onClick(NavBarAction.Phone(config.phone)) },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Outlined.Call,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                                tint = MaterialTheme.colorScheme.secondary)
-                            Spacer(Modifier.width(6.dp))
-                            Text(
-                                text = config.phone,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                    }
-                }
-                NavBarConfig.BackOnly -> Unit
-            }
-        },
-        actions = {}
-    )
+@Composable
+private fun PhonePill(phone: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            Icons.Outlined.Call,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.secondary
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(text = phone, style = MaterialTheme.typography.bodyLarge)
+    }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFfff)
