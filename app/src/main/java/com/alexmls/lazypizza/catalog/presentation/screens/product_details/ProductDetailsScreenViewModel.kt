@@ -3,21 +3,29 @@ package com.alexmls.lazypizza.catalog.presentation.screens.product_details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alexmls.lazypizza.catalog.domain.model.CartItem
 import com.alexmls.lazypizza.catalog.domain.repo.ProductRepository
 import com.alexmls.lazypizza.catalog.domain.repo.ToppingRepository
+import com.alexmls.lazypizza.catalog.domain.usecase.AddToCartUseCase
 import com.alexmls.lazypizza.catalog.presentation.mapper.toUi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class ProductDetailsScreenViewModel(
     private val productRepo: ProductRepository,
     private val toppingRepo: ToppingRepository,
+    private val addToCart: AddToCartUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val _events = Channel<ProductDetailsEvent>(capacity = 1)
+    val events = _events.receiveAsFlow()
 
     private val productId: String = checkNotNull(savedStateHandle.get<String>("productId"))
 
@@ -50,7 +58,16 @@ class ProductDetailsScreenViewModel(
     fun onAction(action: ProductDetailsScreenAction) {
         when (action) {
             ProductDetailsScreenAction.ClickBack -> Unit // handled by host
-            ProductDetailsScreenAction.ClickAddToCart -> Unit // send event in real app
+            ProductDetailsScreenAction.ClickAddToCart -> {
+                val s = _state.value
+                if (s.productId.isNotBlank()) {
+                    onAddToCartClick(
+                        productId = s.productId,
+                        toppings  = s.qty,
+                        quantity  = 1
+                    )
+                }
+            }
             is ProductDetailsScreenAction.AddOne -> modify(action.id) { 1 }
             is ProductDetailsScreenAction.Inc -> modify(action.id) { it + 1 }
             is ProductDetailsScreenAction.DecOrRemove -> modify(action.id) { n -> (n - 1).coerceAtLeast(0) }
@@ -72,5 +89,15 @@ class ProductDetailsScreenViewModel(
         val nextQty = if (newQty == 0) current.qty - id else current.qty + (id to newQty)
         val next = current.copy(qty = nextQty)
         recalcAndSet(next)
+    }
+    private fun onAddToCartClick(
+        productId: String,
+        toppings: Map<String, Int>,
+        quantity: Int
+    ) {
+        viewModelScope.launch {
+            addToCart(CartItem(productId, toppings, quantity))
+            _events.send(ProductDetailsEvent.AddedToCart)
+        }
     }
 }

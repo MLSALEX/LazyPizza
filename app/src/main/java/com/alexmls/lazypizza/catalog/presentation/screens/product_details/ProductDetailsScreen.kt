@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -60,18 +61,25 @@ import org.koin.androidx.compose.koinViewModel
 fun ProductDetailsRoot(
     viewModel: ProductDetailsScreenViewModel = koinViewModel(),
     onBack: () -> Unit,
-    onAddToCart: (totalCents: Int, selected: Map<String, Int>) -> Unit
+    onAddedToCart: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val onAddedToCartUpToDate by rememberUpdatedState(onAddedToCart)
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { e ->
+            if (e is ProductDetailsEvent.AddedToCart) {
+                onAddedToCartUpToDate()
+            }
+        }
+    }
 
     ProductDetailsScreen(
         state = state,
         onAction = { action ->
             when (action) {
                 ProductDetailsScreenAction.ClickBack -> onBack()
-                ProductDetailsScreenAction.ClickAddToCart -> {
-                    onAddToCart(state.totalCents, state.qty)
-                }
                 else -> viewModel.onAction(action)
             }
         }
