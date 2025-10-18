@@ -90,4 +90,7 @@ val Typography.bodyMediumMedium: TextStyle
 val Typography.bodyMediumBold: TextStyle
     get() = bodyMedium.copy(fontWeight = FontWeight.Bold)
 
+val Typography.titleLargeMedium: TextStyle
+    get() = titleLarge.copy(fontWeight = FontWeight.Medium)
+
 

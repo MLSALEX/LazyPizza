@@ -62,7 +62,11 @@ fun Navigation(
                 }
             )
         }
-        composable<NavDestination.Cart>    { CartRoot() }
+        composable<NavDestination.Cart>    {
+            CartRoot(
+                onNavigateToMenu = { navigateToTab(navController, NavTab.Menu) }
+            )
+        }
         composable<NavDestination.History> { HistoryRoot() }
         composable<NavDestination.ProductDetails> { entry ->
             ProductDetailsRoot(

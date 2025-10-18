@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
@@ -40,6 +41,7 @@ fun LpPrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     height: Dp = 48.dp,
+    textStyle: TextStyle = MaterialTheme.typography.labelLarge
 ) {
     val gradient: Brush = BrandColors.btGradient
 
@@ -79,7 +81,7 @@ fun LpPrimaryButton(
     ) {
        Text(
            text = text,
-           style = MaterialTheme.typography.titleSmall
+           style = textStyle
         )
     }
 }
