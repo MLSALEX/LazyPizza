@@ -2,6 +2,7 @@ package com.alexmls.lazypizza.app
 
 import android.app.Application
 import com.alexmls.lazypizza.app.di.appModule
+import com.alexmls.lazypizza.cart.di.cartModule
 import com.alexmls.lazypizza.catalog.di.catalogModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,8 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 appModule,
-                catalogModule
+                catalogModule,
+                cartModule
             )
         }
     }

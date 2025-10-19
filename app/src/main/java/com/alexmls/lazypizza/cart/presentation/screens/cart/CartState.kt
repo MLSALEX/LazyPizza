@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.catalog.presentation.screens.cart
+package com.alexmls.lazypizza.cart.presentation.screens.cart
 
 import androidx.compose.runtime.Immutable
 

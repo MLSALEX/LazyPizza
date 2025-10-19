@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.catalog.presentation.screens.cart.components
+package com.alexmls.lazypizza.cart.presentation.screens.cart.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

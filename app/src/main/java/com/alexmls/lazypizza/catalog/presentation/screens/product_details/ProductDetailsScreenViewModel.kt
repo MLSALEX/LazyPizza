@@ -3,11 +3,11 @@ package com.alexmls.lazypizza.catalog.presentation.screens.product_details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alexmls.lazypizza.catalog.domain.model.CartItem
 import com.alexmls.lazypizza.catalog.domain.repo.ProductRepository
 import com.alexmls.lazypizza.catalog.domain.repo.ToppingRepository
-import com.alexmls.lazypizza.catalog.domain.usecase.AddToCartUseCase
 import com.alexmls.lazypizza.catalog.presentation.mapper.toUi
+import com.alexmls.lazypizza.core.domain.cart.AddToCartRequest
+import com.alexmls.lazypizza.core.domain.cart.CartWriteApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 class ProductDetailsScreenViewModel(
     private val productRepo: ProductRepository,
     private val toppingRepo: ToppingRepository,
-    private val addToCart: AddToCartUseCase,
+    private val cart: CartWriteApi,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -96,7 +96,7 @@ class ProductDetailsScreenViewModel(
         quantity: Int
     ) {
         viewModelScope.launch {
-            addToCart(CartItem(productId, toppings, quantity))
+            cart.addToCart(AddToCartRequest(productId, toppings, quantity))
             _events.send(ProductDetailsEvent.AddedToCart)
         }
     }

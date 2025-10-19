@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.catalog.presentation.screens.cart
+package com.alexmls.lazypizza.cart.presentation.screens.cart
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alexmls.lazypizza.R
-import com.alexmls.lazypizza.catalog.presentation.screens.cart.components.EmptyCartState
+import com.alexmls.lazypizza.cart.presentation.screens.cart.components.EmptyCartState
 import com.alexmls.lazypizza.core.designsystem.components.NavBar
 import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme

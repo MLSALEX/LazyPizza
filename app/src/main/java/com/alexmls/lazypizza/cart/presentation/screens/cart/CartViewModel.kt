@@ -1,8 +1,8 @@
-package com.alexmls.lazypizza.catalog.presentation.screens.cart
+package com.alexmls.lazypizza.cart.presentation.screens.cart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alexmls.lazypizza.catalog.domain.usecase.ObserveCartCountUseCase
+import com.alexmls.lazypizza.cart.domain.repo.CartRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,12 +13,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class CartViewModel(
-    observeCartCount: ObserveCartCountUseCase
+class CartViewModel internal constructor(
+    private val repo: CartRepository
 ) : ViewModel() {
 
     val state: StateFlow<CartState> =
-        observeCartCount()
+        repo.observeCount()
             .map { count -> CartState(itemCount = count) }
             .distinctUntilChanged()
             .stateIn(
@@ -37,5 +37,4 @@ class CartViewModel(
             }
         }
     }
-
 }

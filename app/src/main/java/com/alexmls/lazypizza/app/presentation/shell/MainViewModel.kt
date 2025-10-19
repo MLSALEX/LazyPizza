@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alexmls.lazypizza.app.navigation.NavTab
 import com.alexmls.lazypizza.app.navigation.NavigationBarState
-import com.alexmls.lazypizza.catalog.domain.usecase.ObserveCartCountUseCase
+import com.alexmls.lazypizza.core.domain.cart.CartReadApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,12 +13,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 
 class MainViewModel (
-    observeCartCount: ObserveCartCountUseCase
+    cartRead: CartReadApi
 ) : ViewModel() {
     private val _active = MutableStateFlow<NavTab>(NavTab.Menu)
 
     val navBarState: StateFlow<NavigationBarState> =
-        combine(_active, observeCartCount()) { tab, count ->
+        combine(_active, cartRead.observeCount()) { tab, count ->
             NavigationBarState(activeTab = tab, cartCount = count)
         }
             .distinctUntilChanged()
