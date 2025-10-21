@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.selectable
@@ -43,10 +42,10 @@ fun TabItem(
     iconPainter: Painter,
     badgeCount: Int,
     onClick: () -> Unit,
-    badgeOffset: DpOffset = DpOffset(8.dp, (-8).dp),
+    badgeOffset: DpOffset = DpOffset(6.dp, (-6).dp),
     labelTextStyle: TextStyle = MaterialTheme.typography.labelMedium,
-    iconSize: Dp = 16.dp,
-    badgeSize: Dp = 16.dp
+    iconSize: Dp = 18.dp,
+    badgeSize: Dp = 18.dp
 ) {
     val cs = MaterialTheme.colorScheme
     val iconTint = if (selected) cs.primary else cs.onSurfaceVariant
@@ -54,7 +53,7 @@ fun TabItem(
     val bubbleColor = if (selected) cs.primary.copy(alpha = 0.08f) else Color.Transparent
 
     val interactions = remember { MutableInteractionSource() }
-    val iconRipple = ripple(bounded = true, radius = 28.dp)
+    val iconRipple = ripple(bounded = true, radius = 34.dp)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -73,11 +72,11 @@ fun TabItem(
             )
     ) {
         Box(
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier.size(34.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(28.dp)
+                    .size(34.dp)
                     .clip(CircleShape)
                     .indication(interactions, iconRipple)
             ) {
@@ -113,8 +112,7 @@ fun TabItem(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(badgeSize)
-                            .padding(horizontal = 4.dp),
+                            .size(badgeSize),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

@@ -71,11 +71,11 @@ val Typography = Typography(
         fontSize = 12.sp,
         lineHeight = 16.sp,
     ),
-    labelSmall = TextStyle( // Label-2 SemiBold
+    labelSmall = TextStyle(
         fontFamily = InstrumentSans,
         fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
+        fontSize = 10.sp,
+        lineHeight = 12.sp,
     ),
 )
 
