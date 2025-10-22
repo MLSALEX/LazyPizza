@@ -39,8 +39,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.alexmls.lazypizza.catalog.presentation.components.ButtonOverlay
-import com.alexmls.lazypizza.catalog.presentation.components.ProductImage
+import com.alexmls.lazypizza.core.designsystem.components.ButtonOverlay
+import com.alexmls.lazypizza.core.designsystem.components.ProductImage
 import com.alexmls.lazypizza.catalog.presentation.components.ToppingCard
 import com.alexmls.lazypizza.catalog.presentation.model.ToppingUi
 import com.alexmls.lazypizza.catalog.presentation.preview.PreviewToppings
@@ -434,6 +434,7 @@ private fun ToppingsSection(
             onClick = { onAction(ProductDetailsScreenAction.ClickAddToCart) },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp)
                 .fillMaxWidth()
         )
     }

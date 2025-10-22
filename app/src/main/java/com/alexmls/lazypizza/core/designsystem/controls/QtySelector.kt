@@ -31,6 +31,7 @@ fun QtySelector(
     modifier: Modifier = Modifier,
     range: IntRange = 1..999,
     width: Dp = 96.dp,
+    allowDecAtMin: Boolean = true,
 ) {
     val inc by rememberUpdatedState(onInc)
     val dec by rememberUpdatedState(onDec)
@@ -40,8 +41,9 @@ fun QtySelector(
     val iconSize = 14.dp
     val numberStyle = MaterialTheme.typography.titleMedium
 
-    val canDec = value >= range.first
+    val isAtMin = value <= range.first
     val canInc = value < range.last
+    val canDec = if (allowDecAtMin) true else value > range.first
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -50,7 +52,7 @@ fun QtySelector(
             .height(height)
     ) {
         IconButton(
-            onClick = { if (canDec) dec() },
+            onClick = {  if (!isAtMin || allowDecAtMin) dec()},
             enabled = canDec,
             modifier = Modifier.size(buttonSize)
         ) {

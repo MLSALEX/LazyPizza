@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.catalog.presentation.components
+package com.alexmls.lazypizza.core.designsystem.components
 
 
 import androidx.compose.ui.graphics.Shape

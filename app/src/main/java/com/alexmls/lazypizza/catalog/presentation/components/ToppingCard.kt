@@ -32,6 +32,7 @@ import com.alexmls.lazypizza.catalog.presentation.model.ToppingUi
 import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
 import com.alexmls.lazypizza.core.designsystem.card_style.LpCardStyle
 import com.alexmls.lazypizza.core.designsystem.card_style.rememberLpCardStyle
+import com.alexmls.lazypizza.core.designsystem.components.ProductImage
 import com.alexmls.lazypizza.core.designsystem.controls.QtySelector
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 

@@ -21,4 +21,5 @@
     <string name="cart_empty_title">Your Cart Is Empty</string>
     <string name="cart_empty_subtitle">Head back to the menu and grab a pizza you love.</string>
     <string name="back_to_menu">Back to Menu</string>
+    <string name="checkout_for">Proceed to Checkout (%1$s)</string>
 </resources>
