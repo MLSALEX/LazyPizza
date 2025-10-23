@@ -22,4 +22,6 @@
     <string name="cart_empty_subtitle">Head back to the menu and grab a pizza you love.</string>
     <string name="back_to_menu">Back to Menu</string>
     <string name="checkout_for">Proceed to Checkout (%1$s)</string>
+    <string name="recommended_to_add_to_your_order">RECOMMENDED TO ADD TO YOUR ORDER</string>
+    <string name="add">Add</string>
 </resources>

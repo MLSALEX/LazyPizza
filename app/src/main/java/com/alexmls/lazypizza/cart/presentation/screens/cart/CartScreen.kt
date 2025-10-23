@@ -21,10 +21,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alexmls.lazypizza.R
+import com.alexmls.lazypizza.cart.presentation.model.AddonUi
 import com.alexmls.lazypizza.cart.presentation.screens.cart.components.CartItemCard
 import com.alexmls.lazypizza.cart.presentation.screens.cart.components.EmptyCartState
-import com.alexmls.lazypizza.core.designsystem.components.ButtonOverlay
+import com.alexmls.lazypizza.cart.presentation.screens.cart.components.RecommendedAddonsRow
 import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
+import com.alexmls.lazypizza.core.designsystem.components.ButtonOverlay
 import com.alexmls.lazypizza.core.designsystem.components.NavBar
 import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
@@ -62,6 +64,9 @@ fun CartScreen(
         UsdFormat.format(state.totalCents)
     }
     val totalText = stringResource(R.string.checkout_for, formattedTotal)
+    val addAddon = rememberUpdatedState<(AddonUi) -> Unit> { a ->
+        onAction(CartAction.AddRecommended(a))
+    }
 
     Column(
         modifier = Modifier
@@ -80,28 +85,36 @@ fun CartScreen(
             )
         } else {
             Box(Modifier.fillMaxSize()) {
-                LazyColumn(
-                    contentPadding = PaddingValues(bottom = 60.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(
-                        items = state.items,
-                        key = { it.id.value }
-                    ) { item ->
-                        val inc = remember(item.id) { { onAction(CartAction.Inc(item.id)) } }
-                        val dec = remember(item.id) { { onAction(CartAction.Dec(item.id)) } }
-                        val remove = remember(item.id) { { onAction(CartAction.Remove(item.id)) } }
+                Column {
+                    LazyColumn(
+                        contentPadding = PaddingValues(bottom = 60.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f)
+                    ) {
+                        items(
+                            items = state.items,
+                            key = { it.id.value }
+                        ) { item ->
+                            val inc = remember(item.id) { { onAction(CartAction.Inc(item.id)) } }
+                            val dec = remember(item.id) { { onAction(CartAction.Dec(item.id)) } }
+                            val remove = remember(item.id) { { onAction(CartAction.Remove(item.id)) } }
 
-                        CartItemCard(
-                            item = item,
-                            onInc = inc,
-                            onDec = dec,
-                            onRemove = remove
-                        )
+                            CartItemCard(
+                                item = item,
+                                onInc = inc,
+                                onDec = dec,
+                                onRemove = remove
+                            )
+                        }
                     }
+                    RecommendedAddonsRow(
+                        items = state.addons,
+                        onAddClick = addAddon.value,
+                        modifier = Modifier.padding(bottom = 70.dp)
+                    )
                 }
-
                 ButtonOverlay(
                     text = totalText,
                     onClick = {},
