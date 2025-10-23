@@ -37,8 +37,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -77,6 +79,7 @@ fun HomeRoot(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val haptics = LocalHapticFeedback.current
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -86,6 +89,7 @@ fun HomeRoot(
                     onNavigateToDetails(e.productId)
                 }
                 is HomeEvent.Dial -> openDialer(context, e.number)
+                HomeEvent.HapticTick -> haptics.performHapticFeedback(HapticFeedbackType.LongPress)
             }
         }
     }

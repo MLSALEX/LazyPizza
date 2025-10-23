@@ -21,9 +21,12 @@ data class AddToCartPayload(
 /** Write-side of Cart */
 interface CartWriteApi {
     suspend fun addToCart(payload: AddToCartPayload)
+    suspend fun setQuantity(productId: String, quantity: Int)
+    suspend fun removeProduct(productId: String)
 }
 
 /** Read-side of Cart (for badges, etc.) */
 interface CartReadApi {
     fun observeCount(): Flow<Int>
+    fun observeQuantities(): Flow<Map<String, Int>>
 }

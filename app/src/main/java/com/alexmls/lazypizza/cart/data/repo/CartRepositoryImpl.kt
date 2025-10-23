@@ -45,8 +45,13 @@ internal class CartRepositoryImpl : CartRepository {
         _lines.map { it.values.sumOf { ln -> ln.qty } }
 
     override suspend fun setQty(id: CartLineId, qty: Int) {
-        if (qty < 1) return
-        _lines.update { m -> m[id]?.let { m + (id to it.copy(qty = qty)) } ?: m }
+        _lines.update { m ->
+            when {
+                qty <= 0      -> m - id
+                m[id] != null -> m + (id to m.getValue(id).copy(qty = qty))
+                else          -> m
+            }
+        }
     }
 
     override suspend fun remove(id: CartLineId) {

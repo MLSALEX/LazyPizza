@@ -71,7 +71,7 @@ fun Navigation(
         composable<NavDestination.ProductDetails> { entry ->
             ProductDetailsRoot(
                 onBack = { navController.navigateUp() },
-                onAddedToCart = { navigateToTab(navController, NavTab.Cart) }
+                onAddedToCart = { navigateToTab(navController, NavTab.Menu) }
             )
         }
     }

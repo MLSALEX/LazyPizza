@@ -73,6 +73,9 @@ fun ProductCard(
     val cb by rememberUpdatedState(callbacks)
     val hasQty = qty > 0
 
+    val showDescription = (variant == ProductCardVariant.NoAddButton) || (qty == 0)
+    val showTrash       = (variant == ProductCardVariant.WithAddButton) && hasQty
+
     Card(
         onClick = cb.open,
         shape = style.shape,
@@ -90,13 +93,13 @@ fun ProductCard(
     ) {
         ProductCardContent(
             item = item,
-            showDescription = (qty == 0),
-            topRight = if (hasQty) { { TrashButton(onClick = cb.remove) } } else null,
+            showDescription = showDescription,
+            topRight = if (showTrash) { { TrashButton(onClick = cb.remove) } } else null,
             bottomContent = {
                 BottomContent(
                     qty = qty,
                     priceCents = item.priceCents,
-                    showAddButton = (variant == ProductCardVariant.WithAddButton && qty == 0),
+                    variant = variant,
                     onAdd = cb.add,
                     onInc = cb.inc,
                     onDec = cb.dec
@@ -138,12 +141,12 @@ fun OtherProductCard(
 private fun BottomContent(
     qty: Int,
     priceCents: Int,
-    showAddButton: Boolean,
+    variant: ProductCardVariant,
     onAdd: () -> Unit,
     onInc: () -> Unit,
     onDec: () -> Unit
 ) {
-    if (qty == 0) {
+    if (qty == 0 || variant == ProductCardVariant.NoAddButton) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = UsdFormat.format(priceCents),
@@ -151,7 +154,7 @@ private fun BottomContent(
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.weight(1f)
             )
-            if (showAddButton) {
+            if (variant == ProductCardVariant.WithAddButton) {
                 LpSecondaryButton(
                     text = stringResource(R.string.add_to_cart),
                     onClick = onAdd,

@@ -1,5 +1,15 @@
 package com.alexmls.lazypizza.app.presentation.shell.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -17,11 +27,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -97,34 +109,78 @@ fun TabItem(
                 )
             }
 
-            if (tab == NavTab.Cart && badgeCount > 0) {
-                val text = if (badgeCount > 99) "99+" else badgeCount.toString()
-                Surface(
-                    shape = CircleShape,
-                    color = cs.primary,
-                    contentColor = cs.onPrimary,
-                    tonalElevation = 0.dp,
-                    shadowElevation = 0.dp,
+            if (tab == NavTab.Cart) {
+                CartBadge(
+                    count = badgeCount,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .offset(x = badgeOffset.x, y = badgeOffset.y)
-                        .zIndex(1f)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(badgeSize),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    }
-                }
+                        .zIndex(1f),
+                    badgeSize = badgeSize
+                )
             }
         }
 
         Spacer(Modifier.height(6.dp))
         Text(text = label, color = labelColor, style = labelTextStyle)
+    }
+}
+
+@Composable
+private fun CartBadge(
+    count: Int,
+    modifier: Modifier = Modifier,
+    badgeSize: Dp = 18.dp
+) {
+    val cs = MaterialTheme.colorScheme
+    val visible = count > 0
+    val displayText = if (count > 99) "99+" else count.toString()
+
+    val pop = remember { Animatable(1f) }
+    LaunchedEffect(count) {
+        if (visible) {
+            pop.snapTo(0.85f)
+            pop.animateTo(
+                targetValue = 1f,
+                animationSpec = spring(dampingRatio = 0.45f, stiffness = 700f)
+            )
+        }
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        modifier = modifier.graphicsLayer {
+            scaleX = pop.value
+            scaleY = pop.value
+        },
+        enter = scaleIn(
+            animationSpec = spring(dampingRatio = 0.7f, stiffness = 400f),
+            initialScale = 0.7f
+        ) + fadeIn(),
+        exit = fadeOut() + shrinkOut()
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = cs.primary,
+            contentColor = cs.onPrimary,
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp
+        ) {
+            Box(
+                modifier = Modifier.size(badgeSize),
+                contentAlignment = Alignment.Center
+            ) {
+                AnimatedContent(
+                    targetState = displayText,
+                    transitionSpec = {
+                        (scaleIn(initialScale = 0.85f) + fadeIn())
+                            .togetherWith(scaleOut(targetScale = 1.1f) + fadeOut())
+                    },
+                    label = "badgeText"
+                ) { value ->
+                    Text(text = value, style = MaterialTheme.typography.labelSmall)
+                }
+            }
+        }
     }
 }
