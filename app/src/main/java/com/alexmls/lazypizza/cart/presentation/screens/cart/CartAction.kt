@@ -9,4 +9,5 @@ sealed interface CartAction {
     data class Dec(val id: CartLineId) : CartAction
     data class Remove(val id: CartLineId) : CartAction
     data class AddRecommended(val addon: AddonUi) : CartAction
+    data object Checkout : CartAction
 }

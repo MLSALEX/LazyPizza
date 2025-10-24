@@ -29,6 +29,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,23 +47,16 @@ import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumBold
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
 
 @Immutable
-sealed interface NavBarAction {
-    data object Back : NavBarAction
-    data class Phone(val number: String) : NavBarAction
-}
-
-@Immutable
 sealed interface NavBarConfig {
     data class TitleCenter(val title: String) : NavBarConfig
-    data class TitleWithPhone(val title: String, val phone: String) : NavBarConfig
-    data object BackOnly : NavBarConfig
+    data class TitleWithPhone(val title: String,val phone: String, val onPhone: (String) -> Unit) : NavBarConfig
+    data class BackOnly(val onBack: () -> Unit) : NavBarConfig
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavBar(
     config: NavBarConfig,
-    onClick: (NavBarAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -81,14 +76,16 @@ fun NavBar(
         }
 
         is NavBarConfig.BackOnly -> {
+            val onBack by rememberUpdatedState(config.onBack)
             TopAppBar(
                 colors = colors,
-                navigationIcon = { BackButton { onClick(NavBarAction.Back) } },
+                navigationIcon = { BackButton(onBack) },
                 title = {}
             )
         }
 
         is NavBarConfig.TitleWithPhone -> {
+            val onPhone by rememberUpdatedState(config.onPhone)
             PlainTopBar(
                 modifier = modifier
             ) {
@@ -96,7 +93,7 @@ fun NavBar(
                 Spacer(Modifier.weight(1f))
                 PhonePill(
                     phone = config.phone,
-                    onClick = { onClick(NavBarAction.Phone(config.phone)) }
+                    onClick = { onPhone(config.phone) }
                 )
             }
         }
@@ -187,9 +184,9 @@ private fun Preview_NavBar_TitleWithPhone() {
         NavBar(
             config = NavBarConfig.TitleWithPhone(
                 title = "LazyPizza",
-                phone = "+1 (555) 321-7890"
-            ),
-            onClick = {}
+                phone = "+1 (555) 321-7890",
+                onPhone = { }
+            )
         )
     }
 }
@@ -198,8 +195,9 @@ private fun Preview_NavBar_TitleWithPhone() {
 private fun Preview_NavBar_BackOnly() {
     LazyPizzaTheme {
         NavBar(
-            config = NavBarConfig.BackOnly,
-            onClick = {}
+            config = NavBarConfig.BackOnly(
+                onBack = { }
+            )
         )
     }
 }

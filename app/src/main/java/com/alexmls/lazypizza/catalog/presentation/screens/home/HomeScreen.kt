@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -62,12 +61,11 @@ import com.alexmls.lazypizza.catalog.presentation.utils.titleRes
 import com.alexmls.lazypizza.core.common.openDialer
 import com.alexmls.lazypizza.core.designsystem.Adaptive
 import com.alexmls.lazypizza.core.designsystem.LayoutType
+import com.alexmls.lazypizza.core.designsystem.LocalLayoutType
 import com.alexmls.lazypizza.core.designsystem.components.LpSearchField
 import com.alexmls.lazypizza.core.designsystem.components.NavBar
-import com.alexmls.lazypizza.core.designsystem.components.NavBarAction
 import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
 import com.alexmls.lazypizza.core.designsystem.components.NoResultsMsg
-import com.alexmls.lazypizza.core.designsystem.rememberLayoutType
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -79,7 +77,6 @@ fun HomeRoot(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val haptics = LocalHapticFeedback.current
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -89,7 +86,6 @@ fun HomeRoot(
                     onNavigateToDetails(e.productId)
                 }
                 is HomeEvent.Dial -> openDialer(context, e.number)
-                HomeEvent.HapticTick -> haptics.performHapticFeedback(HapticFeedbackType.LongPress)
             }
         }
     }
@@ -106,7 +102,7 @@ fun HomeScreen(
     state: HomeState,
     onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
-    layout: LayoutType = rememberLayoutType()
+    layout: LayoutType = LocalLayoutType.current
 ) {
     val act by rememberUpdatedState(onAction)
 
@@ -143,12 +139,11 @@ fun HomeScreen(
             .padding(horizontal = 16.dp)
     ) {
         NavBar(
-            config = NavBarConfig.TitleWithPhone(state.title, state.phone),
-            onClick = { navAction ->
-                if (navAction is NavBarAction.Phone) {
-                    act(HomeAction.ClickPhone(state.phone))
-                }
-            }
+            config = NavBarConfig.TitleWithPhone(
+                title = state.title,
+                phone = state.phone,
+                onPhone = { number -> act(HomeAction.ClickPhone(number))}
+            )
         )
         HeroBanner(modifier = Modifier
             .fillMaxWidth()

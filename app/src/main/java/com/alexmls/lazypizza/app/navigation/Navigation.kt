@@ -48,7 +48,8 @@ sealed interface NavTab {
 @Composable
 fun Navigation(
     navController: NavHostController,
-    padding: PaddingValues
+    padding: PaddingValues,
+    modifier: Modifier
 ) {
     NavHost(
         navController = navController,

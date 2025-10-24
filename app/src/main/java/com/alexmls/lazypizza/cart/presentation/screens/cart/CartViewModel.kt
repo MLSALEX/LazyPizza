@@ -64,6 +64,7 @@ class CartViewModel internal constructor(
             is CartAction.Dec -> dec(action.id)
             is CartAction.Remove -> remove(action.id)
             is CartAction.AddRecommended -> addAddon(action.addon)
+            CartAction.Checkout -> Unit
         }
     }
     private fun navigateToMenu() = viewModelScope.launch {

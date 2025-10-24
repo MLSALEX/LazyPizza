@@ -39,17 +39,16 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.alexmls.lazypizza.core.designsystem.components.ButtonOverlay
-import com.alexmls.lazypizza.core.designsystem.components.ProductImage
 import com.alexmls.lazypizza.catalog.presentation.components.ToppingCard
 import com.alexmls.lazypizza.catalog.presentation.model.ToppingUi
 import com.alexmls.lazypizza.catalog.presentation.preview.PreviewToppings
 import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
 import com.alexmls.lazypizza.core.designsystem.Adaptive
 import com.alexmls.lazypizza.core.designsystem.card_style.rememberLpCardStyle
+import com.alexmls.lazypizza.core.designsystem.components.ButtonOverlay
 import com.alexmls.lazypizza.core.designsystem.components.NavBar
-import com.alexmls.lazypizza.core.designsystem.components.NavBarAction
 import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
+import com.alexmls.lazypizza.core.designsystem.components.ProductImage
 import com.alexmls.lazypizza.core.designsystem.rememberLayoutType
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.core.designsystem.theme.modifier.Corner
@@ -97,14 +96,14 @@ fun ProductDetailsScreen(
         derivedStateOf { "Add to Cart for ${UsdFormat.format(state.totalCents)}" }
     }
     val topProps = rememberTopProps(state)
+    val onBackUpToDate by rememberUpdatedState { onAction(ProductDetailsScreenAction.ClickBack) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             NavBar(
-                config = NavBarConfig.BackOnly,
-                onClick = { if (it is NavBarAction.Back) onAction(ProductDetailsScreenAction.ClickBack) }
+                config = NavBarConfig.BackOnly(onBack = onBackUpToDate),
             )
         }
     ) { innerPadding ->

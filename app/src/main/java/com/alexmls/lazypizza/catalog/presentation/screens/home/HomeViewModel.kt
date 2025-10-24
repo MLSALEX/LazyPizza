@@ -67,13 +67,11 @@ class HomeViewModel (
                     quantity = 1
                 )
             )
-            sendEvent(HomeEvent.HapticTick)
         }
     }
     private fun onSetQty(productId: String, qty: Int) {
         viewModelScope.launch {
             cartWrite.setQuantity(productId, qty) // 0 = delete
-            if (qty > 0) sendEvent(HomeEvent.HapticTick)
         }
     }
 

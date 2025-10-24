@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -20,6 +21,7 @@ import com.alexmls.lazypizza.app.navigation.Navigation
 import com.alexmls.lazypizza.app.navigation.NavigationBarState
 import com.alexmls.lazypizza.app.navigation.utils.navigateToTab
 import com.alexmls.lazypizza.core.designsystem.LayoutType
+import com.alexmls.lazypizza.core.designsystem.LocalLayoutType
 import com.alexmls.lazypizza.core.designsystem.rememberLayoutType
 import org.koin.androidx.compose.koinViewModel
 
@@ -29,12 +31,14 @@ fun MainRoot(
     navController: NavHostController = rememberNavController()
 ) {
     val barState by vm.navBarState.collectAsStateWithLifecycle()
-
-    MainScreen(
-        navController = navController,
-        state = barState,
-        onSelectTab = vm::onTabSelected
-    )
+    val layout = rememberLayoutType()
+    CompositionLocalProvider(LocalLayoutType provides layout) {
+        MainScreen(
+            navController = navController,
+            state = barState,
+            onSelectTab = vm::onTabSelected
+        )
+    }
 }
 
 @Composable
@@ -44,7 +48,7 @@ fun MainScreen(
     onSelectTab: (NavTab) -> Unit,
     onAction: (MainAction) -> Unit = {}
 ) {
-    val layout = rememberLayoutType()
+    val layout = LocalLayoutType.current
     val backStack by navController.currentBackStackEntryAsState()
     val showBar = backStack?.destination?.hasRoute<NavDestination.ProductDetails>() != true
 
@@ -91,7 +95,7 @@ fun MainScreen(
                     onSelectTab = onTabClick
                 )
 
-            Navigation(navController, padding)
+            Navigation(navController, padding, Modifier.weight(1f))
         }
     }
 }

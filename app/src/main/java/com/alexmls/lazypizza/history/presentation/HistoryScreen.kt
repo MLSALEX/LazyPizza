@@ -45,7 +45,6 @@ fun HistoryScreen(
     ) {
         NavBar(
             config = NavBarConfig.TitleCenter(stringResource(R.string.order_history)),
-            onClick = {} ,
             modifier = Modifier.fillMaxWidth()
         )
 
