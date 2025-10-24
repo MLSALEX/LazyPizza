@@ -129,15 +129,21 @@ private fun CartMobile(
 ) {
     Box(Modifier.fillMaxSize()) {
         Column {
-            CartItemsList(
-                items = state.items,
-                onInc = { id -> onAction(CartAction.Inc(id)) },
-                onDec = { id -> onAction(CartAction.Dec(id)) },
-                onRemove = { id -> onAction(CartAction.Remove(id)) },
+            Column (
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-            )
+                    .padding(end = 16.dp)
+            ){
+                CartItemsList(
+                    items = state.items,
+                    onInc = { id -> onAction(CartAction.Inc(id)) },
+                    onDec = { id -> onAction(CartAction.Dec(id)) },
+                    onRemove = { id -> onAction(CartAction.Remove(id)) },
+                    modifier = Modifier
+                )
+            }
+
             RecommendedAddonsRow(
                 items = state.addons,
                 onAddClick = onAddon,
@@ -149,7 +155,8 @@ private fun CartMobile(
             onClick = { onAction(CartAction.Checkout) },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(end = 16.dp),
             scrimHeight = 72.dp,
         )
     }
@@ -219,7 +226,7 @@ private fun CartItemsList(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(bottom = 60.dp),
+        contentPadding = PaddingValues(bottom = 60.dp, top = 4.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
