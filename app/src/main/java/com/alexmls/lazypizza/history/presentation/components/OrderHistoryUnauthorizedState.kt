@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.catalog.presentation.screens.history.components
+package com.alexmls.lazypizza.history.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentWidth

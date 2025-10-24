@@ -10,7 +10,6 @@ import com.alexmls.lazypizza.catalog.data.seed.ProductSeeder
 import com.alexmls.lazypizza.catalog.domain.repo.ProductRepository
 import com.alexmls.lazypizza.catalog.domain.repo.ToppingRepository
 import com.alexmls.lazypizza.catalog.domain.usecase.AddProductToCartUseCase
-import com.alexmls.lazypizza.catalog.presentation.screens.history.HistoryViewModel
 import com.alexmls.lazypizza.catalog.presentation.screens.home.HomeViewModel
 import com.alexmls.lazypizza.catalog.presentation.screens.product_details.ProductDetailsScreenViewModel
 import com.alexmls.lazypizza.core.domain.catalog.CatalogReadApi
@@ -23,7 +22,6 @@ import org.koin.dsl.module
 val catalogModule = module {
     viewModelOf(::HomeViewModel)
     viewModelOf(::ProductDetailsScreenViewModel)
-    viewModelOf(::HistoryViewModel)
 
     single { FirestoreProductDataSource(get()) }
     single<ProductRepository> { ProductRepositoryImpl(get(), get(AppScope)) }
