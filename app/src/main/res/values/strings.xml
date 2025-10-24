@@ -24,4 +24,7 @@
     <string name="checkout_for">Proceed to Checkout (%1$s)</string>
     <string name="recommended_to_add_to_your_order">RECOMMENDED TO ADD TO YOUR ORDER</string>
     <string name="add">Add</string>
+    <string name="not_signed_in">Not Signed In</string>
+    <string name="please_sign_in_to_view_your_order_history">Please sign in to view your order history.</string>
+    <string name="sign_in">Sign In</string>
 </resources>

@@ -1,5 +1,6 @@
-package com.alexmls.lazypizza.cart.presentation.screens.cart.components
+package com.alexmls.lazypizza.catalog.presentation.screens.history.components
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -14,19 +15,19 @@ import com.alexmls.lazypizza.core.designsystem.components.EmptyState
 import com.alexmls.lazypizza.core.designsystem.components.LpPrimaryButton
 
 @Composable
-fun EmptyCartState(
-    onBackToMenu: () -> Unit,
+fun OrderHistoryUnauthorizedState(
+    onSignIn: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val onClickUpToDate by rememberUpdatedState(onBackToMenu)
+    val onClickUpToDate by rememberUpdatedState(onSignIn)
 
     EmptyState(
-        title = stringResource(R.string.cart_empty_title),
-        subtitle = stringResource(R.string.cart_empty_subtitle),
-        modifier = modifier,
+        title = stringResource(R.string.not_signed_in),
+        subtitle = stringResource(R.string.please_sign_in_to_view_your_order_history),
+        modifier = Modifier.fillMaxSize(),
         action = {
             LpPrimaryButton(
-                text = stringResource(R.string.back_to_menu),
+                text = stringResource(R.string.sign_in),
                 onClick = onClickUpToDate,
                 modifier = Modifier.wrapContentWidth(),
                 height = 44.dp,
