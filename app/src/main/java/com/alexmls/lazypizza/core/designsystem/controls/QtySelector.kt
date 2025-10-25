@@ -38,7 +38,7 @@ fun QtySelector(
 
     val height = 24.dp
     val buttonSize = 24.dp
-    val iconSize = 14.dp
+    val iconSize = 18.dp
     val numberStyle = MaterialTheme.typography.titleMedium
 
     val isAtMin = value <= range.first

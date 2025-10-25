@@ -16,11 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
@@ -44,9 +41,9 @@ import com.alexmls.lazypizza.core.designsystem.card_style.LpCardStyle
 import com.alexmls.lazypizza.core.designsystem.card_style.rememberLpCardStyle
 import com.alexmls.lazypizza.core.designsystem.components.LpSecondaryButton
 import com.alexmls.lazypizza.core.designsystem.components.ProductImage
+import com.alexmls.lazypizza.core.designsystem.components.TrashButton
 import com.alexmls.lazypizza.core.designsystem.controls.QtySelector
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
-import com.alexmls.lazypizza.core.designsystem.theme.Trash
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
 
 
@@ -193,22 +190,6 @@ private fun BottomContent(
 }
 
 @Composable
-private fun TrashButton(
-    onClick: () -> Unit
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier.size(24.dp)) {
-        Icon(
-            Icons.Filled.Trash,
-            contentDescription = stringResource(R.string.delete_item),
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(14.dp)
-        )
-    }
-}
-
-@Composable
 private fun ProductCardContent(
     item: ProductUi,
     showDescription: Boolean,
@@ -259,7 +240,6 @@ private fun ProductCardContent(
                         modifier = Modifier.weight(1f)
                     )
                     if (topRight != null) {
-                        Spacer(Modifier.width(8.dp))
                         topRight()
                     }
                 }
