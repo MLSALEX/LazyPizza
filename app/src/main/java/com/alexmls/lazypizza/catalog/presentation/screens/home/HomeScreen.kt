@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -374,14 +373,24 @@ fun CategorizedGrid2Cols(
                 val cardModifier = Modifier
                     .fillMaxWidth()
                 val id = sectionItem.product.id
-                val callbacks = remember(id, act) {
-                    ProductCallbacks(
-                        open   = { act(HomeAction.OpenDetails(id)) },
-                        add    = { act(HomeAction.Add(id)) },
-                        inc    = { act(HomeAction.Inc(id)) },
-                        dec    = { act(HomeAction.Dec(id)) },
-                        remove = { act(HomeAction.Remove(id)) }
-                    )
+                val callbacks = remember(id, act, sectionItem.product.category) {
+                    if (sectionItem.product.category == CategoryUi.Pizza) {
+                        ProductCallbacks(
+                            open   = { act(HomeAction.OpenDetails(id)) },
+                            add    = { act(HomeAction.Add(id)) },
+                            inc    = { act(HomeAction.Inc(id)) },
+                            dec    = { act(HomeAction.Dec(id)) },
+                            remove = { act(HomeAction.Remove(id)) }
+                        )
+                    } else {
+                        ProductCallbacks(
+                            open   = {},
+                            add    = { act(HomeAction.Add(id)) },
+                            inc    = { act(HomeAction.Inc(id)) },
+                            dec    = { act(HomeAction.Dec(id)) },
+                            remove = { act(HomeAction.Remove(id)) }
+                        )
+                    }
                 }
                 when (sectionItem.product.category) {
                     CategoryUi.Pizza -> {
