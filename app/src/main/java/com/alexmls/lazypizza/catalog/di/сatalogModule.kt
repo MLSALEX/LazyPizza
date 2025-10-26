@@ -10,6 +10,10 @@ import com.alexmls.lazypizza.catalog.data.seed.ProductSeeder
 import com.alexmls.lazypizza.catalog.domain.repo.ProductRepository
 import com.alexmls.lazypizza.catalog.domain.repo.ToppingRepository
 import com.alexmls.lazypizza.catalog.domain.usecase.AddProductToCartUseCase
+import com.alexmls.lazypizza.catalog.domain.usecase.ApplyToppingQtyChangeUseCase
+import com.alexmls.lazypizza.catalog.domain.usecase.BuildSelectionsUseCase
+import com.alexmls.lazypizza.catalog.domain.usecase.CalculateTotalUseCase
+import com.alexmls.lazypizza.catalog.domain.usecase.ObserveProductDetailsUseCase
 import com.alexmls.lazypizza.catalog.presentation.screens.home.HomeViewModel
 import com.alexmls.lazypizza.catalog.presentation.screens.product_details.ProductDetailsScreenViewModel
 import com.alexmls.lazypizza.core.domain.catalog.CatalogReadApi
@@ -36,4 +40,9 @@ val catalogModule = module {
     single<CatalogReadApi> { AddonsFromCatalog(get<ProductRepository>()) }
 
     single { AddProductToCartUseCase(get(), get(), get()) }
+    single { ApplyToppingQtyChangeUseCase() }
+    single { BuildSelectionsUseCase() }
+    single { CalculateTotalUseCase() }
+    single { ObserveProductDetailsUseCase(get(), get()) }
+
 }

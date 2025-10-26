@@ -3,23 +3,26 @@ package com.alexmls.lazypizza.catalog.presentation.screens.product_details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alexmls.lazypizza.catalog.domain.repo.ProductRepository
-import com.alexmls.lazypizza.catalog.domain.repo.ToppingRepository
+import com.alexmls.lazypizza.catalog.domain.model.Product
+import com.alexmls.lazypizza.catalog.domain.model.Topping
 import com.alexmls.lazypizza.catalog.domain.usecase.AddProductToCartUseCase
-import com.alexmls.lazypizza.catalog.domain.usecase.ToppingSelection
+import com.alexmls.lazypizza.catalog.domain.usecase.ApplyToppingQtyChangeUseCase
+import com.alexmls.lazypizza.catalog.domain.usecase.BuildSelectionsUseCase
+import com.alexmls.lazypizza.catalog.domain.usecase.CalculateTotalUseCase
+import com.alexmls.lazypizza.catalog.domain.usecase.ObserveProductDetailsUseCase
 import com.alexmls.lazypizza.catalog.presentation.mapper.toUi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class ProductDetailsScreenViewModel(
-    private val productRepo: ProductRepository,
-    private val toppingRepo: ToppingRepository,
+    private val observeDetails: ObserveProductDetailsUseCase,
+    private val applyQtyChange: ApplyToppingQtyChangeUseCase,
+    private val calcTotal: CalculateTotalUseCase,
+    private val buildSelections: BuildSelectionsUseCase,
     private val addProductToCart: AddProductToCartUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -32,67 +35,56 @@ class ProductDetailsScreenViewModel(
     private val _state = MutableStateFlow(ProductDetailsScreenState(isLoading = true))
     val state: StateFlow<ProductDetailsScreenState> = _state
 
+    private var domainProduct: Product? = null
+    private var domainToppings: List<Topping> = emptyList()
+
     init {
         viewModelScope.launch {
-            combine(
-                productRepo.observeProducts().map { list -> list.firstOrNull { it.id == productId } },
-                toppingRepo.observeToppings()
-            ) { product, toppings -> product to toppings }
-                .collectLatest { (p, tops) ->
-                    val uiToppings = tops.map { it.toUi() }
-                    recalcAndSet(
-                        _state.value.copy(
-                            productId = p?.id.orEmpty(),
-                            title = p?.name.orEmpty(),
-                            description = p?.description.orEmpty(),
-                            imageUrl = p?.imageUrl.orEmpty(),
-                            basePriceCents = p?.priceCents ?: 0,
-                            toppings = uiToppings,
-                            isLoading = false
-                        )
-                    )
-                }
+            observeDetails(productId).collectLatest { (p, tops) ->
+                domainProduct = p
+                domainToppings = tops
+                val uiToppings = tops.map { it.toUi() }
+                val next = _state.value.copy(
+                    productId = p.id,
+                    title = p.name,
+                    description = p.description.orEmpty(),
+                    imageUrl = p.imageUrl,
+                    basePriceCents = p.priceCents,
+                    toppings = uiToppings,
+                    isLoading = false
+                )
+                recalcAndSet(next)
+            }
         }
     }
 
     fun onAction(action: ProductDetailsScreenAction) {
         when (action) {
-            ProductDetailsScreenAction.ClickBack -> Unit // handled by host
-            ProductDetailsScreenAction.ClickAddToCart -> {
-                val s = _state.value
-                if (s.productId.isNotBlank()) {
-                    onAddToCartClick()
-                }
-            }
-
-            is ProductDetailsScreenAction.AddOne -> modify(action.id) { 1 }
-            is ProductDetailsScreenAction.Inc -> modify(action.id) { it + 1 }
-            is ProductDetailsScreenAction.DecOrRemove -> modify(action.id) { n -> (n - 1).coerceAtLeast(0) }
+            ProductDetailsScreenAction.ClickBack -> Unit
+            ProductDetailsScreenAction.ClickAddToCart -> onAddToCartClick()
+            is ProductDetailsScreenAction.AddOne      -> modify(action.id) { 1 }
+            is ProductDetailsScreenAction.Inc         -> modify(action.id) { it + 1 }
+            is ProductDetailsScreenAction.DecOrRemove -> modify(action.id) { it - 1 }
         }
     }
-    private fun computeTotal(state: ProductDetailsScreenState): Int {
-        val priceById = state.toppings.associate { it.id to it.priceCents }
-        val extras = state.qty.entries.sumOf { (id, q) -> (priceById[id] ?: 0) * q }
-        return state.basePriceCents + extras
+
+    private fun modify(id: String, f: (Int) -> Int) {
+        val current = _state.value
+        val nextQty = applyQtyChange(current.qty, id, f, domainToppings)
+        recalcAndSet(current.copy(qty = nextQty))
     }
 
     private fun recalcAndSet(next: ProductDetailsScreenState) {
-        _state.value = next.copy(totalCents = computeTotal(next))
+        val base = next.basePriceCents
+        val total = calcTotal(base, domainToppings, next.qty)
+        _state.value = next.copy(totalCents = total)
     }
-    private fun modify(id: String, f: (Int) -> Int) {
-        val current = _state.value
-        val old = current.qty[id] ?: 0
-        val newQty = f(old)
-        val nextQty = if (newQty == 0) current.qty - id else current.qty + (id to newQty)
-        val next = current.copy(qty = nextQty)
-        recalcAndSet(next)
-    }
+
     private fun onAddToCartClick() {
         val s = state.value
-        val selections: List<ToppingSelection> =
-            s.qty.mapNotNull { (id, units) -> if (units > 0) ToppingSelection(id, units) else null }
-
+        if (s.productId.isBlank()) return
         viewModelScope.launch {
+            val selections = buildSelections(s.qty, domainToppings)
             addProductToCart(
                 productId = s.productId,
                 selections = selections,
