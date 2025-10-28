@@ -1,19 +1,15 @@
 package com.alexmls.lazypizza.catalog.presentation.components
 
-import androidx.annotation.IntRange
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
@@ -22,16 +18,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
@@ -46,220 +41,235 @@ import com.alexmls.lazypizza.core.designsystem.controls.QtySelector
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
 
-
-@Immutable
-data class ProductCallbacks(
-    val open: () -> Unit,
-    val add: () -> Unit,
-    val inc: () -> Unit,
-    val dec: () -> Unit,
-    val remove: () -> Unit
-)
-
-enum class ProductCardVariant { WithAddButton, NoAddButton }
-
-@Composable
-fun ProductCard(
-    item: ProductUi,
-    qty: Int,
-    callbacks: ProductCallbacks,
-    variant: ProductCardVariant,
-    modifier: Modifier = Modifier,
-    style: LpCardStyle = rememberLpCardStyle(),
-) {
-    val cb by rememberUpdatedState(callbacks)
-    val hasQty = qty > 0
-
-    val showDescription = (variant == ProductCardVariant.NoAddButton) || (qty == 0)
-    val showTrash       = (variant == ProductCardVariant.WithAddButton) && hasQty
-
-    Card(
-        onClick = cb.open,
-        shape = style.shape,
-        colors = CardDefaults.cardColors(
-            containerColor = style.container,
-            contentColor = contentColorFor(style.container)
-        ),
-        border = style.borderDefault,
-        modifier = modifier.shadow(
-            elevation = 16.dp,
-            shape = style.shape,
-            spotColor = style.shadowSpot,
-            ambientColor = style.shadowAmbient
-        )
-    ) {
-        ProductCardContent(
-            item = item,
-            showDescription = showDescription,
-            topRight = if (showTrash) { { TrashButton(onClick = cb.remove) } } else null,
-            bottomContent = {
-                BottomContent(
-                    qty = qty,
-                    priceCents = item.priceCents,
-                    variant = variant,
-                    onAdd = cb.add,
-                    onInc = cb.inc,
-                    onDec = cb.dec
-                )
-            }
-        )
-    }
-}
-
 @Composable
 fun PizzaCard(
     item: ProductUi,
-    @IntRange(from = 0)qty: Int,
-    callbacks: ProductCallbacks,
-    modifier: Modifier = Modifier
-) = ProductCard(
-    item = item,
-    qty = qty,
-    callbacks = callbacks,
-    variant = ProductCardVariant.NoAddButton,
-    modifier = modifier
-)
+    onOpenDetails: () -> Unit,
+    modifier: Modifier = Modifier,
+    style: LpCardStyle = rememberLpCardStyle(),
+) {
+    val colors = CardDefaults.cardColors(
+        containerColor = style.container,
+        contentColor = contentColorFor(style.container)
+    )
+    val base = modifier.shadow(
+        elevation = 16.dp,
+        shape = style.shape,
+        spotColor = style.shadowSpot,
+        ambientColor = style.shadowAmbient
+    )
+
+    Card(
+        onClick = onOpenDetails,
+        shape = style.shape,
+        colors = colors,
+        border = style.borderDefault,
+        modifier = base
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
+                .padding(end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ProductImagePanel(
+                url = item.imageUrl,
+                contentDescription = item.name,
+                backgroundColor = style.imageAreaColor,
+                modifier = Modifier.fillMaxHeight()
+            )
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(vertical = 12.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    ProductTitle(item.name)
+                    Spacer(Modifier.height(2.dp))
+                    ProductDescription(item.description)
+                }
+                Spacer(Modifier.height(8.dp))
+                ProductPrice(item.priceCents)
+            }
+        }
+    }
+}
 
 @Composable
 fun OtherProductCard(
     item: ProductUi,
-    @IntRange(from = 0) qty: Int,
-    callbacks: ProductCallbacks,
-    modifier: Modifier = Modifier
-) = ProductCard(
-    item = item,
-    qty = qty,
-    callbacks = callbacks,
-    variant = ProductCardVariant.WithAddButton,
-    modifier = modifier
-)
-
-@Composable
-private fun BottomContent(
     qty: Int,
-    priceCents: Int,
-    variant: ProductCardVariant,
     onAdd: () -> Unit,
     onInc: () -> Unit,
-    onDec: () -> Unit
+    onDec: () -> Unit,
+    onRemove: () -> Unit,
+    modifier: Modifier = Modifier,
+    style: LpCardStyle = rememberLpCardStyle(),
 ) {
-    if (qty == 0 || variant == ProductCardVariant.NoAddButton) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = UsdFormat.format(priceCents),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.weight(1f)
+    val hasQty = qty > 0
+    val colors = CardDefaults.cardColors(
+        containerColor = style.container,
+        contentColor = contentColorFor(style.container)
+    )
+    val base = modifier.shadow(
+        elevation = 16.dp,
+        shape = style.shape,
+        spotColor = style.shadowSpot,
+        ambientColor = style.shadowAmbient
+    )
+
+    Card(
+        shape = style.shape,
+        colors = colors,
+        border = style.borderDefault,
+        modifier = base
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
+                .padding(end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ProductImagePanel(
+                url = item.imageUrl,
+                contentDescription = item.name,
+                backgroundColor = style.imageAreaColor,
+                modifier = Modifier.fillMaxHeight()
             )
-            if (variant == ProductCardVariant.WithAddButton) {
-                LpSecondaryButton(
-                    text = stringResource(R.string.add_to_cart),
-                    onClick = onAdd,
-                    modifier = Modifier.height(40.dp)
-                )
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(vertical = 12.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ProductTitle(
+                        text = item.name,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (hasQty) {
+                        TrashButton(onClick = onRemove)
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+
+                if (!hasQty) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        ProductPrice(item.priceCents, Modifier.weight(1f))
+                        LpSecondaryButton(
+                            text = stringResource(R.string.add_to_cart),
+                            onClick = onAdd,
+                            modifier = Modifier.height(40.dp)
+                        )
+                    }
+                } else {
+                    PriceWithQty(qty, item.priceCents, onInc, onDec)
+                }
             }
         }
-    } else {
-        val total = remember(qty, priceCents) { UsdFormat.format(qty * priceCents) }
-        val unit  = remember(priceCents) { UsdFormat.format(priceCents) }
+    }
+}
+@Composable
+fun ProductImagePanel(
+    url: String,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    width: Dp = 120.dp,
+    imageSize: Dp = 112.dp,
+    inset: Dp = 6.dp,
+    backgroundColor: Color
+) {
+    Box(
+        modifier = modifier
+            .width(width)
+            .background(backgroundColor),
+        contentAlignment = Alignment.Center
+    ) {
+        ProductImage(
+            url = url,
+            contentDescription = contentDescription,
+            modifier = Modifier
+                .size(imageSize)
+                .padding(inset)
+        )
+    }
+}
+@Composable
+private fun PriceWithQty(
+    qty: Int,
+    unitCents: Int,
+    onInc: () -> Unit,
+    onDec: () -> Unit,
+) {
+    val total = remember(qty, unitCents) { UsdFormat.format(qty * unitCents) }
+    val unit  = remember(unitCents)      { UsdFormat.format(unitCents) }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            QtySelector(
-                value = qty,
-                onInc = onInc,
-                onDec = onDec
-            )
-            Spacer(Modifier.width(12.dp))
-            Column(
-                horizontalAlignment = Alignment.End,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = total,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Text(
-                    text = "${qty} × $unit",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        QtySelector(value = qty, onInc = onInc, onDec = onDec)
+        Spacer(Modifier.width(12.dp))
+        Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+            Text(total, style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text("${qty} × $unit", style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary)
         }
     }
 }
 
 @Composable
-private fun ProductCardContent(
-    item: ProductUi,
-    showDescription: Boolean,
-    topRight: (@Composable () -> Unit)? = null,
-    bottomContent: @Composable () -> Unit
+fun ProductTitle(
+    text: String,
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .requiredHeightIn(min = 120.dp)
-            .padding(end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .width(120.dp)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            ProductImage(
-                url = item.imageUrl,
-                contentDescription = item.name,
-                modifier = Modifier
-                    .size(112.dp)
-                    .padding(6.dp)
-            )
-        }
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMediumMedium,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
+        modifier = modifier
+    )
+}
 
-        Spacer(Modifier.width(12.dp))
-
-        Column(
-            Modifier
-                .weight(1f)
-                .fillMaxHeight()
-                .padding(vertical = 12.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = item.name,
-                        style = MaterialTheme.typography.bodyMediumMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.weight(1f)
-                    )
-                    if (topRight != null) {
-                        topRight()
-                    }
-                }
-            }
-
-            if (showDescription && item.description.isNotEmpty()) {
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = item.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-
-            Spacer(Modifier.height(8.dp))
-            Box(Modifier.animateContentSize()) { bottomContent() }
-        }
+@Composable
+fun ProductDescription(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    if (text.isNotEmpty()) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.secondary,
+            modifier = modifier
+        )
     }
+}
+
+@Composable
+fun ProductPrice(
+    cents: Int,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = UsdFormat.format(cents),
+        style = MaterialTheme.typography.titleLarge,
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
+        modifier = modifier
+    )
 }
 
 @Preview(
@@ -268,7 +278,7 @@ private fun ProductCardContent(
     showBackground = true,
     backgroundColor = 0xffF0F3F6)
 @Composable
-private fun Pizza_Qty0() {
+private fun Pizza_Clickable() {
     LazyPizzaTheme {
         val item = ProductUi(
             id = "pizza_margherita",
@@ -278,51 +288,9 @@ private fun Pizza_Qty0() {
             category = CategoryUi.Pizza,
             imageUrl = "https://pl-coding.com/wp-content/uploads/lazypizza/pizza/Margherita.png"
         )
-
         PizzaCard(
             item = item,
-            qty = 0,
-            callbacks = ProductCallbacks(
-                open = {},
-                add = {},
-                inc = {},
-                dec = {},
-                remove = {}
-            ),
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        )
-    }
-}
-
-@Preview(
-    widthDp = 412,
-    heightDp = 150,
-    showBackground = true,
-    backgroundColor = 0xffF0F3F6)
-@Composable
-private fun Pizza_Qty2() {
-    LazyPizzaTheme {
-        val item = ProductUi(
-            id = "pizza_margherita",
-            name = "Margherita",
-            description = "Tomato sauce, mozzarella, fresh basil, olive oil",
-            priceCents = 899,
-            category = CategoryUi.Pizza,
-            imageUrl = "https://pl-coding.com/wp-content/uploads/lazypizza/pizza/margherita.png"
-        )
-
-        PizzaCard(
-            item = item,
-            qty = 2,
-            callbacks = ProductCallbacks(
-                open = {},
-                add = {},
-                inc = {},
-                dec = {},
-                remove = {}
-            ),
+            onOpenDetails = {  },
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
@@ -340,19 +308,15 @@ private fun Other_Qty0() {
             description = "",
             priceCents = 149,
             category = CategoryUi.Drinks,
-            "https://pl-coding.com/wp-content/uploads/lazypizza/drink/mineral-water.png"
+            imageUrl = "https://pl-coding.com/wp-content/uploads/lazypizza/drink/mineral-water.png"
         )
-
         OtherProductCard(
             item = drink,
             qty = 0,
-            callbacks = ProductCallbacks(
-                open = {},
-                add = {},
-                inc = {},
-                dec = {},
-                remove = {}
-            ),
+            onAdd = { },
+            onInc = { },
+            onDec = { },
+            onRemove = { },
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
@@ -376,13 +340,10 @@ private fun Other_Qty2() {
         OtherProductCard(
             item = drink,
             qty = 2,
-            callbacks = ProductCallbacks(
-                open = {},
-                add = {},
-                inc = {},
-                dec = {},
-                remove = {}
-            ),
+            onAdd = { },
+            onInc = { },
+            onDec = { },
+            onRemove = { },
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()

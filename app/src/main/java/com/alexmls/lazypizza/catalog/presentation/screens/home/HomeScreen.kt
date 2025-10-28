@@ -48,7 +48,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.catalog.presentation.components.OtherProductCard
 import com.alexmls.lazypizza.catalog.presentation.components.PizzaCard
-import com.alexmls.lazypizza.catalog.presentation.components.ProductCallbacks
 import com.alexmls.lazypizza.catalog.presentation.model.CategorySectionUi
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
 import com.alexmls.lazypizza.catalog.presentation.model.SectionItemUi
@@ -290,39 +289,23 @@ fun CategorizedLazyColumn(
                 val cardModifier = Modifier
                     .padding(vertical = 4.dp)
                 val id = sectionItem.product.id
-                val callbacks = remember(id, act, sectionItem.product.category) {
-                    if (sectionItem.product.category == CategoryUi.Pizza) {
-                        ProductCallbacks(
-                            open   = { act(HomeAction.OpenDetails(id)) },
-                            add    = { act(HomeAction.Add(id)) },
-                            inc    = { act(HomeAction.Inc(id)) },
-                            dec    = { act(HomeAction.Dec(id)) },
-                            remove = { act(HomeAction.Remove(id)) }
-                        )
-                    } else {
-                        ProductCallbacks(
-                            open   = {},
-                            add    = { act(HomeAction.Add(id)) },
-                            inc    = { act(HomeAction.Inc(id)) },
-                            dec    = { act(HomeAction.Dec(id)) },
-                            remove = { act(HomeAction.Remove(id)) }
-                        )
-                    }
-                }
+                val qty = sectionItem.qty
                 when (sectionItem.product.category) {
                     CategoryUi.Pizza -> {
                         PizzaCard(
                             item = sectionItem.product,
-                            qty = sectionItem.qty,
-                            callbacks = callbacks,
+                            onOpenDetails = { act(HomeAction.OpenDetails(id)) },
                             modifier = cardModifier
                         )
                     }
                     else -> {
                         OtherProductCard(
                             item = sectionItem.product,
-                            qty = sectionItem.qty,
-                            callbacks = callbacks,
+                            qty = qty,
+                            onAdd = { act(HomeAction.Add(id)) },
+                            onInc = { act(HomeAction.Inc(id)) },
+                            onDec = { act(HomeAction.Dec(id)) },
+                            onRemove = { act(HomeAction.Remove(id)) },
                             modifier = cardModifier
                         )
                     }
@@ -373,39 +356,23 @@ fun CategorizedGrid2Cols(
                 val cardModifier = Modifier
                     .fillMaxWidth()
                 val id = sectionItem.product.id
-                val callbacks = remember(id, act, sectionItem.product.category) {
-                    if (sectionItem.product.category == CategoryUi.Pizza) {
-                        ProductCallbacks(
-                            open   = { act(HomeAction.OpenDetails(id)) },
-                            add    = { act(HomeAction.Add(id)) },
-                            inc    = { act(HomeAction.Inc(id)) },
-                            dec    = { act(HomeAction.Dec(id)) },
-                            remove = { act(HomeAction.Remove(id)) }
-                        )
-                    } else {
-                        ProductCallbacks(
-                            open   = {},
-                            add    = { act(HomeAction.Add(id)) },
-                            inc    = { act(HomeAction.Inc(id)) },
-                            dec    = { act(HomeAction.Dec(id)) },
-                            remove = { act(HomeAction.Remove(id)) }
-                        )
-                    }
-                }
+                val qty = sectionItem.qty
                 when (sectionItem.product.category) {
                     CategoryUi.Pizza -> {
                         PizzaCard(
                             item = sectionItem.product,
-                            qty = sectionItem.qty,
-                            callbacks = callbacks,
+                            onOpenDetails = { act(HomeAction.OpenDetails(id)) },
                             modifier = cardModifier
                         )
                     }
                     else -> {
                         OtherProductCard(
                             item = sectionItem.product,
-                            qty = sectionItem.qty,
-                            callbacks = callbacks,
+                            qty = qty,
+                            onAdd = { act(HomeAction.Add(id)) },
+                            onInc = { act(HomeAction.Inc(id)) },
+                            onDec = { act(HomeAction.Dec(id)) },
+                            onRemove = { act(HomeAction.Remove(id)) },
                             modifier = cardModifier
                         )
                     }

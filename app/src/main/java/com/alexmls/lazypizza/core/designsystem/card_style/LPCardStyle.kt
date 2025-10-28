@@ -17,6 +17,7 @@ data class LpCardStyle(
     val borderActive: BorderStroke,
     val shadowSpot: Color,
     val shadowAmbient: Color,
+    val imageAreaColor: Color
 )
 
 @Composable
@@ -35,7 +36,8 @@ fun rememberLpCardStyle(): LpCardStyle {
             borderDefault = borderDefault,
             borderActive = borderActive,
             shadowSpot = cs.onPrimaryContainer.copy(alpha = 0.06f),
-            shadowAmbient = cs.onPrimaryContainer
+            shadowAmbient = cs.onPrimaryContainer,
+            imageAreaColor = cs.surfaceVariant
         )
     }
 }
