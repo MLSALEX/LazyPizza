@@ -1,6 +1,7 @@
 package com.alexmls.lazypizza.catalog.presentation.screens.home
 
 import androidx.compose.runtime.Immutable
+import com.alexmls.lazypizza.catalog.presentation.model.CategorySectionUi
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
 import com.alexmls.lazypizza.catalog.presentation.model.ProductUi
 
@@ -14,6 +15,8 @@ data class HomeState(
     val categories: List<CategoryUi> = CategoryUi.entries,
     val items: List<ProductUi> = emptyList(),
     val qty: Map<String, Int> = emptyMap(),
-) {
-    fun qtyOf(id: String) = qty[id] ?: 0
-}
+
+    val sections: List<CategorySectionUi> = emptyList(),
+    val sectionStart: Map<CategoryUi, Int> = emptyMap(),
+    val isEmptyAfterFilter: Boolean = false
+)

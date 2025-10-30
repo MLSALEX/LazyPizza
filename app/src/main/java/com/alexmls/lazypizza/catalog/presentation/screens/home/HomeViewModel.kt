@@ -4,19 +4,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alexmls.lazypizza.catalog.domain.repo.ProductRepository
 import com.alexmls.lazypizza.catalog.presentation.mapper.toUi
+import com.alexmls.lazypizza.catalog.presentation.selector.buildSectionStartIndex
+import com.alexmls.lazypizza.catalog.presentation.selector.buildSections
+import com.alexmls.lazypizza.catalog.presentation.selector.filterItems
 import com.alexmls.lazypizza.core.domain.cart.AddToCartPayload
 import com.alexmls.lazypizza.core.domain.cart.CartReadApi
 import com.alexmls.lazypizza.core.domain.cart.CartWriteApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@OptIn(FlowPreview::class)
 class HomeViewModel (
     private val productRepository: ProductRepository,
     private val cartWrite: CartWriteApi,
@@ -30,15 +37,34 @@ class HomeViewModel (
     val state: StateFlow<HomeState> = _state.asStateFlow()
 
     init {
+        val searchFlow = _state
+            .map { it.search }
+            .distinctUntilChanged()
+            .debounce(150)
+
+        val itemsFlow = productRepository.observeProducts()
+            .map { it.map { d -> d.toUi() } }
+
+        val qtyFlow = cartRead.observeQuantities()
+
         viewModelScope.launch {
-            combine(
-                productRepository.observeProducts().map { it.map { d -> d.toUi() } },
-                cartRead.observeQuantities()
-            ) { itemsUi, qtyMap ->
-                _state.value.copy(isLoading = false, items = itemsUi, qty = qtyMap)
+            combine(itemsFlow, qtyFlow, searchFlow) { itemsUi, qtyMap, query ->
+                // compute derived fields once per change
+                val filtered = filterItems(itemsUi, query)
+                val sections = buildSections(filtered, qtyMap)
+                val sectionStart = buildSectionStartIndex(sections)
+                _state.value.copy(
+                    isLoading = false,
+                    items = itemsUi,
+                    qty = qtyMap,
+                    sections = sections,
+                    sectionStart = sectionStart,
+                    isEmptyAfterFilter = filtered.isEmpty()
+                )
             }.collect { next -> _state.value = next }
         }
     }
+
 
     fun onAction(action: HomeAction) {
         when (action) {

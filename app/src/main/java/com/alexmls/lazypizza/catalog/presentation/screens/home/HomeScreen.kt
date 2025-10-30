@@ -27,9 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -50,10 +48,7 @@ import com.alexmls.lazypizza.catalog.presentation.components.OtherProductCard
 import com.alexmls.lazypizza.catalog.presentation.components.PizzaCard
 import com.alexmls.lazypizza.catalog.presentation.model.CategorySectionUi
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
-import com.alexmls.lazypizza.catalog.presentation.model.SectionItemUi
 import com.alexmls.lazypizza.catalog.presentation.preview.PreviewProducts
-import com.alexmls.lazypizza.catalog.presentation.utils.CATEGORY_ORDER
-import com.alexmls.lazypizza.catalog.presentation.utils.buildSectionStartIndex
 import com.alexmls.lazypizza.catalog.presentation.utils.displayName
 import com.alexmls.lazypizza.catalog.presentation.utils.titleRes
 import com.alexmls.lazypizza.core.common.openDialer
@@ -103,33 +98,9 @@ fun HomeScreen(
     layout: LayoutType = LocalLayoutType.current
 ) {
     val act by rememberUpdatedState(onAction)
-
-    val filteredItems by remember(state.items, state.search) {
-        derivedStateOf {
-            val q = state.search.trim().lowercase()
-            state.items
-                .asSequence()
-                .filter { q.isEmpty() || it.name.lowercase().contains(q) }
-                .toList()
-        }
-    }
-    val sections by remember(filteredItems, state.qty) {
-        derivedStateOf {
-            CATEGORY_ORDER.mapNotNull { cat ->
-                val list = filteredItems
-                    .filter { it.category == cat }
-                    .map { p -> SectionItemUi(product = p, qty = state.qty[p.id] ?: 0) }
-                if (list.isEmpty()) null else CategorySectionUi(cat, list)
-            }
-        }
-    }
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
     val scope = rememberCoroutineScope()
-
-    val sectionStart by remember(sections) {
-        derivedStateOf { buildSectionStartIndex(sections) }
-    }
 
     Column(
         modifier = Modifier
@@ -155,7 +126,7 @@ fun HomeScreen(
         CategoryList(
             categories = state.categories,
             onCategoryClick = { cat ->
-                val target = sectionStart[cat] ?: return@CategoryList
+                val target = state.sectionStart[cat] ?: return@CategoryList
                 scope.launch {
                     if (layout == LayoutType.Wide) {
                         gridState.animateScrollToItem(target)
@@ -167,21 +138,21 @@ fun HomeScreen(
         )
 
         Box(Modifier.weight(1f)) {
-            if (filteredItems.isEmpty()) {
+            if (state.isEmptyAfterFilter) {
                 NoResultsMsg()
             } else {
                 Adaptive(
                     layout = layout,
                     mobile = {
                         CategorizedLazyColumn(
-                            sections = sections,
+                            sections = state.sections,
                             onAction = onAction,
                             listState = listState
                         )
                     },
                     wide = {
                         CategorizedGrid2Cols(
-                            sections = sections,
+                            sections = state.sections,
                             onAction = onAction,
                             gridState = gridState
                         )
