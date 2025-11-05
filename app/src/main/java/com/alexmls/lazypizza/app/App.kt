@@ -2,7 +2,7 @@ package com.alexmls.lazypizza.app
 
 import android.app.Application
 import com.alexmls.lazypizza.app.di.appModule
-import com.alexmls.lazypizza.authentication.di.authModule
+import com.alexmls.lazypizza.authorization.di.authModule
 import com.alexmls.lazypizza.cart.di.cartModule
 import com.alexmls.lazypizza.catalog.di.catalogModule
 import com.alexmls.lazypizza.history.di.historyModule

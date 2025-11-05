@@ -1,29 +1,43 @@
 package com.alexmls.lazypizza.history.presentation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.core.designsystem.components.NavBar
 import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.history.presentation.components.OrderHistoryUnauthorizedState
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HistoryRoot(
-    viewModel: HistoryViewModel = viewModel()
+    onNavigateToAuth: () -> Unit,
+    viewModel: HistoryViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                HistoryEvent.NavigateToAuth -> onNavigateToAuth()
+            }
+        }
+    }
 
     HistoryScreen(
         state = state,
@@ -54,7 +68,16 @@ fun HistoryScreen(
                 modifier = Modifier.fillMaxSize()
             )
         } else {
-
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "You have no orders yet",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }

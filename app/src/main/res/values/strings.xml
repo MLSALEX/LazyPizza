@@ -27,4 +27,11 @@
     <string name="not_signed_in">Not Signed In</string>
     <string name="please_sign_in_to_view_your_order_history">Please sign in to view your order history.</string>
     <string name="sign_in">Sign In</string>
+    <string name="welcome_to_lazypizza">Welcome to LazyPizza</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="confirm">Confirm</string>
+    <string name="auth_continue">Continue</string>
+    <string name="continue_without_signing_in">Continue without signing in</string>
+    <string name="auth_enter_code_title">Enter code</string>
+    <string name="auth_resend_code">Resend code</string>
 </resources>

@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alexmls.lazypizza.app.navigation.utils.navigateToTab
 import com.alexmls.lazypizza.app.navigation.utils.toProductDetailsRoute
+import com.alexmls.lazypizza.authorization.presentation.AuthRoot
 import com.alexmls.lazypizza.cart.presentation.screens.cart.CartRoot
 import com.alexmls.lazypizza.catalog.presentation.screens.home.HomeRoot
 import com.alexmls.lazypizza.catalog.presentation.screens.product_details.ProductDetailsRoot
@@ -30,6 +31,9 @@ sealed interface NavDestination  {
     data class ProductDetails(
         val productId: String
     ): NavDestination
+
+    @Serializable
+    data object Auth : NavDestination
 }
 
 @Immutable
@@ -68,11 +72,27 @@ fun Navigation(
                 onNavigateToMenu = { navigateToTab(navController, NavTab.Menu) }
             )
         }
-        composable<NavDestination.History> { HistoryRoot() }
+        composable<NavDestination.History> {
+            HistoryRoot(
+                onNavigateToAuth = {
+                    navController.navigate(NavDestination.Auth)
+                }
+            )
+        }
         composable<NavDestination.ProductDetails> { entry ->
             ProductDetailsRoot(
                 onBack = { navController.navigateUp() },
                 onAddedToCart = { navigateToTab(navController, NavTab.Menu) }
+            )
+        }
+        composable<NavDestination.Auth> {
+            AuthRoot(
+                onFinishedSignedIn = {
+                    navController.popBackStack()
+                },
+                onFinishedGuest = {
+                    navController.popBackStack()
+                }
             )
         }
     }
