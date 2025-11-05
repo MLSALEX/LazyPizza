@@ -1,7 +1,7 @@
 package com.alexmls.lazypizza.core.designsystem.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -43,13 +45,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
+import com.alexmls.lazypizza.core.designsystem.theme.Logout
+import com.alexmls.lazypizza.core.designsystem.theme.Person
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumBold
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
 
 @Immutable
 sealed interface NavBarConfig {
     data class TitleCenter(val title: String) : NavBarConfig
-    data class TitleWithPhone(val title: String,val phone: String, val onPhone: (String) -> Unit) : NavBarConfig
+    data class TitleWithPhone(
+        val title: String,
+        val phone: String,
+        val onPhone: (String) -> Unit,
+        val isAuthorized: Boolean,
+        val onUserClick: () -> Unit
+    ) : NavBarConfig
     data class BackOnly(val onBack: () -> Unit) : NavBarConfig
 }
 
@@ -86,6 +96,8 @@ fun NavBar(
 
         is NavBarConfig.TitleWithPhone -> {
             val onPhone by rememberUpdatedState(config.onPhone)
+            val onUserClick by rememberUpdatedState(config.onUserClick)
+
             PlainTopBar(
                 modifier = modifier
             ) {
@@ -94,6 +106,11 @@ fun NavBar(
                 PhonePill(
                     phone = config.phone,
                     onClick = { onPhone(config.phone) }
+                )
+
+                UserIcon(
+                    isAuthorized = config.isAuthorized,
+                    onClick = onUserClick
                 )
             }
         }
@@ -111,8 +128,7 @@ private fun PlainTopBar(
             .windowInsetsPadding(WindowInsets.statusBars)
             .height(barHeight)
             .padding( 0.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ){
         content()
     }
@@ -177,6 +193,49 @@ private fun PhonePill(phone: String, onClick: () -> Unit) {
     }
 }
 
+@Composable
+private fun UserIcon(
+    isAuthorized: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val icon = if (isAuthorized) {
+        Icons.Outlined.Logout
+    } else {
+        Icons.Outlined.Person
+    }
+    val iconTint = if (isAuthorized) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    }
+    val circleColor = if (isAuthorized) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.secondaryContainer
+    }
+
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+            .size(44.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .background(circleColor, shape = CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = iconTint
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFFFFFfff)
 @Composable
 private fun Preview_NavBar_TitleWithPhone() {
@@ -185,7 +244,9 @@ private fun Preview_NavBar_TitleWithPhone() {
             config = NavBarConfig.TitleWithPhone(
                 title = "LazyPizza",
                 phone = "+1 (555) 321-7890",
-                onPhone = { }
+                onPhone = { },
+                isAuthorized = false,
+                onUserClick = {}
             )
         )
     }

@@ -7,6 +7,8 @@ import com.alexmls.lazypizza.catalog.presentation.mapper.toUi
 import com.alexmls.lazypizza.catalog.presentation.selector.buildSectionStartIndex
 import com.alexmls.lazypizza.catalog.presentation.selector.buildSections
 import com.alexmls.lazypizza.catalog.presentation.selector.filterItems
+import com.alexmls.lazypizza.core.domain.auth.AuthRepository
+import com.alexmls.lazypizza.core.domain.auth.AuthState
 import com.alexmls.lazypizza.core.domain.cart.AddToCartPayload
 import com.alexmls.lazypizza.core.domain.cart.CartReadApi
 import com.alexmls.lazypizza.core.domain.cart.CartWriteApi
@@ -27,7 +29,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel (
     private val productRepository: ProductRepository,
     private val cartWrite: CartWriteApi,
-    private val cartRead: CartReadApi
+    private val cartRead: CartReadApi,
+    private val authRepository: AuthRepository,
 ): ViewModel() {
 
     private val _events = Channel<HomeEvent>(Channel.BUFFERED)
@@ -63,6 +66,15 @@ class HomeViewModel (
                 )
             }.collect { next -> _state.value = next }
         }
+        viewModelScope.launch {
+            authRepository.authState.collect { auth ->
+                _state.update {
+                    it.copy(
+                        isAuthorized = auth is AuthState.Authenticated
+                    )
+                }
+            }
+        }
     }
 
 
@@ -78,6 +90,8 @@ class HomeViewModel (
             is HomeAction.Inc    -> onSetQty(action.id, (state.value.qty[action.id] ?: 0) + 1)
             is HomeAction.Dec    -> onSetQty(action.id, ((state.value.qty[action.id] ?: 0) - 1).coerceAtLeast(0))
             is HomeAction.Remove -> onSetQty(action.id, 0)
+            HomeAction.ClickUser ->
+                onUserIconClicked()
         }
     }
     private fun onAddClick(productId: String) {
@@ -103,5 +117,22 @@ class HomeViewModel (
 
     private fun sendEvent(e: HomeEvent) = viewModelScope.launch {
         _events.send(e)
+    }
+
+    private fun onUserIconClicked() {
+        val authorized = state.value.isAuthorized
+        viewModelScope.launch {
+            if (!authorized) {
+                _events.send(HomeEvent.NavigateToAuth)
+            } else {
+                _events.send(HomeEvent.ShowLogoutDialog)
+            }
+        }
+    }
+
+    fun onLogoutConfirmed() {
+        viewModelScope.launch {
+            authRepository.logout()
+        }
     }
 }

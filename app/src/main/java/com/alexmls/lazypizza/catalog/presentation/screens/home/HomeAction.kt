@@ -5,6 +5,7 @@ import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
 sealed interface HomeAction {
 
     data class ClickPhone(val number: String) : HomeAction
+    data object ClickUser : HomeAction
     data class SearchChanged(val query: String) : HomeAction
     data class CategorySelected(val category: CategoryUi?) : HomeAction // null = All
 

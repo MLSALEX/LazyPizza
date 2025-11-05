@@ -18,5 +18,6 @@ data class HomeState(
 
     val sections: List<CategorySectionUi> = emptyList(),
     val sectionStart: Map<CategoryUi, Int> = emptyMap(),
-    val isEmptyAfterFilter: Boolean = false
+    val isEmptyAfterFilter: Boolean = false,
+    val isAuthorized: Boolean = false
 )

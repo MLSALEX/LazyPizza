@@ -17,3 +17,11 @@ val Icons.Filled.Trash: ImageVector
 val Icons.Filled.Search: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_search)
+
+val Icons.Outlined.Person: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.person)
+
+val Icons.Outlined.Logout: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.logout)

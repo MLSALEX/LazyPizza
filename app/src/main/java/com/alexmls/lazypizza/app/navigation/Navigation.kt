@@ -64,6 +64,9 @@ fun Navigation(
             HomeRoot(
                 onNavigateToDetails = { productId: String ->
                     navController.navigate(productId.toProductDetailsRoute())
+                },
+                onNavigateToAuth = {
+                    navController.navigate(NavDestination.Auth)
                 }
             )
         }

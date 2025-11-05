@@ -34,4 +34,8 @@
     <string name="continue_without_signing_in">Continue without signing in</string>
     <string name="auth_enter_code_title">Enter code</string>
     <string name="auth_resend_code">Resend code</string>
+
+    <string name="logout_title">Are you sure you want to log out?</string>
+    <string name="logout_cancel">Cancel</string>
+    <string name="logout_confirm">Log Out</string>
 </resources>
