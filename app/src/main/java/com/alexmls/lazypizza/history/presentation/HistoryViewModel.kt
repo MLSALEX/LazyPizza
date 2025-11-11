@@ -55,6 +55,11 @@ class HistoryViewModel(
                     _events.send(HistoryEvent.NavigateToAuth)
                 }
             }
+            HistoryAction.ClickGoToMenu -> {
+                viewModelScope.launch {
+                    _events.send(HistoryEvent.NavigateToMenu)
+                }
+            }
         }
     }
 

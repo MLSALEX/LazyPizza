@@ -79,6 +79,9 @@ fun Navigation(
             HistoryRoot(
                 onNavigateToAuth = {
                     navController.navigate(NavDestination.Auth)
+                },
+                onNavigateToMenu = {
+                    navController.navigate(NavDestination.Menu)
                 }
             )
         }
