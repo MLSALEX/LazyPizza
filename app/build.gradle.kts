@@ -5,6 +5,9 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
 
     alias(libs.plugins.google.services)
+
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -46,6 +49,10 @@ android {
     }
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -57,6 +64,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.animation)
+    implementation(libs.androidx.room.common.jvm)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.junit)
@@ -91,5 +99,9 @@ dependencies {
 
     testImplementation(libs.koin.test)
     testImplementation(libs.koin.test.junit4)
+
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 
 }

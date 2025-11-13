@@ -81,7 +81,7 @@ fun Navigation(
                     navController.navigate(NavDestination.Auth)
                 },
                 onNavigateToMenu = {
-                    navController.navigate(NavDestination.Menu)
+                    navigateToTab(navController, NavTab.Menu)
                 }
             )
         }
