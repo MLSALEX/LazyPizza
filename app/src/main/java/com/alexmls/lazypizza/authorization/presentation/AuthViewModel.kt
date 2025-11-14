@@ -52,7 +52,7 @@ class AuthViewModel(
 
             AuthAction.ContinueAsGuestClicked ->
                 viewModelScope.launch {
-                    _events.send(AuthEvent.NavigateBackGuest)
+                    _events.send(AuthEvent.ContinueWithoutSignIn)
                 }
 
             AuthAction.ResendClicked ->  onResendClicked()

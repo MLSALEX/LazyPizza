@@ -36,7 +36,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AuthRoot(
     onFinishedSignedIn: () -> Unit,
-    onFinishedGuest: () -> Unit,
+    onContinueAsGuest: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AuthViewModel = koinViewModel()
 ) {
@@ -47,7 +47,7 @@ fun AuthRoot(
         viewModel.events.collect { event ->
             when (event) {
                 AuthEvent.NavigateBackSignedIn -> onFinishedSignedIn()
-                AuthEvent.NavigateBackGuest -> onFinishedGuest()
+                AuthEvent.ContinueWithoutSignIn -> onContinueAsGuest()
             }
         }
     }

@@ -96,8 +96,8 @@ fun Navigation(
                 onFinishedSignedIn = {
                     navController.popBackStack()
                 },
-                onFinishedGuest = {
-                    navController.popBackStack()
+                onContinueAsGuest = {
+                    navigateToTab(navController, NavTab.Menu)
                 }
             )
         }
