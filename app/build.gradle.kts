@@ -25,12 +25,18 @@ android {
     }
 
     buildTypes {
+        debug {
+            // false = use real Firebase phone auth
+            buildConfigField("boolean", "USE_FAKE_AUTH", "true")
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("boolean", "USE_FAKE_AUTH", "false")
         }
     }
     compileOptions {
@@ -42,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     testOptions {

@@ -7,6 +7,7 @@ import com.alexmls.lazypizza.cart.data.repo.GuestCartRepository
 import com.alexmls.lazypizza.cart.data.repo.SwitchingCartRepository
 import com.alexmls.lazypizza.cart.data.repo.UserSessionCartRepository
 import com.alexmls.lazypizza.cart.domain.repo.CartRepository
+import com.alexmls.lazypizza.core.common.ActivityProvider
 import com.alexmls.lazypizza.core.common.AnonymousAuthInitializer
 import com.alexmls.lazypizza.core.domain.auth.AuthRepository
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +19,10 @@ import org.koin.dsl.module
 val AppScope = named("AppScope")
 
 val appModule = module {
+
+    single<ActivityProvider> {
+        (androidApplication() as App).activityProvider
+    }
     single<CoroutineScope>(AppScope) {
         (androidApplication() as App).applicationScope
     }
