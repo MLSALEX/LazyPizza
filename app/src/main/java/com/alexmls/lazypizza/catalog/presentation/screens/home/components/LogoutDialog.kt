@@ -34,6 +34,7 @@ fun LogoutDialog(
     ) {
         Box(
             modifier = Modifier
+                .widthIn(max = 400.dp)
                 .fillMaxWidth()
                 .padding(horizontal = 26.dp)
         ) {
