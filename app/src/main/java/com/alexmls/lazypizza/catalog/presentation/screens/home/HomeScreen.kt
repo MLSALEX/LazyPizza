@@ -28,9 +28,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +52,7 @@ import com.alexmls.lazypizza.catalog.presentation.components.PizzaCard
 import com.alexmls.lazypizza.catalog.presentation.model.CategorySectionUi
 import com.alexmls.lazypizza.catalog.presentation.model.CategoryUi
 import com.alexmls.lazypizza.catalog.presentation.preview.PreviewProducts
+import com.alexmls.lazypizza.catalog.presentation.screens.home.components.LogoutDialog
 import com.alexmls.lazypizza.catalog.presentation.utils.displayName
 import com.alexmls.lazypizza.catalog.presentation.utils.titleRes
 import com.alexmls.lazypizza.core.common.openDialer
@@ -66,12 +70,15 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeRoot(
     onNavigateToDetails: (String) -> Unit,
+    onNavigateToAuth: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.events.collect { e ->
             when (e) {
@@ -79,8 +86,19 @@ fun HomeRoot(
                     onNavigateToDetails(e.productId)
                 }
                 is HomeEvent.Dial -> openDialer(context, e.number)
+                HomeEvent.NavigateToAuth -> onNavigateToAuth()
+                HomeEvent.ShowLogoutDialog -> showLogoutDialog = true
             }
         }
+    }
+    if (showLogoutDialog) {
+        LogoutDialog(
+            onConfirm = {
+                showLogoutDialog = false
+                viewModel.onLogoutConfirmed()
+            },
+            onDismiss = { showLogoutDialog = false }
+        )
     }
 
     HomeScreen(
@@ -111,7 +129,9 @@ fun HomeScreen(
             config = NavBarConfig.TitleWithPhone(
                 title = state.title,
                 phone = state.phone,
-                onPhone = { number -> act(HomeAction.ClickPhone(number))}
+                onPhone = { number -> act(HomeAction.ClickPhone(number))},
+                isAuthorized = state.isAuthorized,
+                onUserClick = { act(HomeAction.ClickUser) }
             )
         )
         HeroBanner(modifier = Modifier

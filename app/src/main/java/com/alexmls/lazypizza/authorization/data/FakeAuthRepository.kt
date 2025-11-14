@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.authentication.data
+package com.alexmls.lazypizza.authorization.data
 
 import com.alexmls.lazypizza.core.domain.auth.AuthRepository
 import com.alexmls.lazypizza.core.domain.auth.AuthState

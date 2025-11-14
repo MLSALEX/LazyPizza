@@ -45,3 +45,9 @@ fun LazyPizzaTheme(
         shapes      = Shapes,
     )
 }
+
+@Composable
+fun color() = MaterialTheme.colorScheme
+
+@Composable
+fun typography() = MaterialTheme.typography

@@ -52,8 +52,6 @@ class CartViewModel internal constructor(
                 CartState()
             )
 
-
-
     private val _events = Channel<CartEvent>(capacity = Channel.BUFFERED)
     val events: Flow<CartEvent> = _events.receiveAsFlow()
 

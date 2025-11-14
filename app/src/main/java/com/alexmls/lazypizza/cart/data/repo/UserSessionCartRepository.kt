@@ -1,17 +1,18 @@
 package com.alexmls.lazypizza.cart.data.repo
 
+import com.alexmls.lazypizza.cart.domain.buildId
 import com.alexmls.lazypizza.cart.domain.model.CartLine
 import com.alexmls.lazypizza.cart.domain.model.CartLineId
 import com.alexmls.lazypizza.cart.domain.model.CartTopping
 import com.alexmls.lazypizza.cart.domain.repo.CartRepository
 import com.alexmls.lazypizza.core.domain.cart.AddToCartPayload
-import com.alexmls.lazypizza.core.domain.cart.ToppingEntry
+import com.alexmls.lazypizza.core.domain.cart.UserSessionPort
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
-internal class CartRepositoryImpl : CartRepository {
+internal class UserSessionCartRepository : CartRepository, UserSessionPort {
 
     private val _lines = MutableStateFlow<Map<CartLineId, CartLine>>(emptyMap())
 
@@ -58,9 +59,12 @@ internal class CartRepositoryImpl : CartRepository {
         _lines.update { it - id }
     }
 
-    private fun buildId(productId: String, toppings: List<ToppingEntry>): CartLineId {
-        val k = toppings.sortedBy { it.id }
-            .joinToString("+") { entry -> "${entry.id}×${entry.units}" }
-        return CartLineId("$productId|$k")
+    // --- session port ---
+    override fun replaceAll(lines: List<CartLine>) {
+        _lines.value = lines.associateBy { it.id }
+    }
+
+    override suspend fun clearUser() {
+        _lines.value = emptyMap()
     }
 }

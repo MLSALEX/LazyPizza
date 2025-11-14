@@ -1,6 +1,6 @@
 package com.alexmls.lazypizza.core.domain.auth
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 sealed interface AuthState {
     data object Anonymous : AuthState
@@ -11,8 +11,11 @@ sealed interface AuthState {
     ) : AuthState
 }
 
-interface AuthRepository {
-    val authState: Flow<AuthState>
+interface AuthStateProvider {
+    val authState: StateFlow<AuthState>
+}
+
+interface AuthRepository: AuthStateProvider {
     suspend fun startPhoneVerification(phone: String)
     suspend fun verifyCode(code: String)
     suspend fun logout()

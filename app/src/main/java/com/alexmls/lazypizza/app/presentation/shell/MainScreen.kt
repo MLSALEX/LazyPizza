@@ -50,7 +50,14 @@ fun MainScreen(
 ) {
     val layout = LocalLayoutType.current
     val backStack by navController.currentBackStackEntryAsState()
-    val showBar = backStack?.destination?.hasRoute<NavDestination.ProductDetails>() != true
+    val destination = backStack?.destination
+
+    val showBar = when {
+        destination?.hasRoute<NavDestination.ProductDetails>() == true -> false
+        destination?.hasRoute<NavDestination.Auth>() == true -> false
+        else -> true
+    }
+
 
     LaunchedEffect(backStack?.destination) {
         when {
