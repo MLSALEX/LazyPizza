@@ -11,7 +11,8 @@ import androidx.navigation.compose.composable
 import com.alexmls.lazypizza.app.navigation.utils.navigateToTab
 import com.alexmls.lazypizza.app.navigation.utils.toProductDetailsRoute
 import com.alexmls.lazypizza.authorization.presentation.AuthRoot
-import com.alexmls.lazypizza.cart.presentation.screens.cart.CartRoot
+import com.alexmls.lazypizza.cart_checkout.presentation.screens.cart.CartRoot
+import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.CheckupRoot
 import com.alexmls.lazypizza.catalog.presentation.screens.home.HomeRoot
 import com.alexmls.lazypizza.catalog.presentation.screens.product_details.ProductDetailsRoot
 import com.alexmls.lazypizza.history.presentation.HistoryRoot
@@ -34,6 +35,9 @@ sealed interface NavDestination  {
 
     @Serializable
     data object Auth : NavDestination
+
+    @Serializable
+    data object Checkup : NavDestination
 }
 
 @Immutable
@@ -72,7 +76,10 @@ fun Navigation(
         }
         composable<NavDestination.Cart>    {
             CartRoot(
-                onNavigateToMenu = { navigateToTab(navController, NavTab.Menu) }
+                onNavigateToMenu = { navigateToTab(navController, NavTab.Menu) },
+                onNavigateToCheckup = {
+                    navController.navigate(NavDestination.Checkup)
+                }
             )
         }
         composable<NavDestination.History> {
@@ -100,6 +107,9 @@ fun Navigation(
                     navigateToTab(navController, NavTab.Menu)
                 }
             )
+        }
+        composable <NavDestination.Checkup>{
+            CheckupRoot()
         }
     }
 }

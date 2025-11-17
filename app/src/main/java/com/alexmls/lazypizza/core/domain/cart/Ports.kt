@@ -1,6 +1,6 @@
 package com.alexmls.lazypizza.core.domain.cart
 
-import com.alexmls.lazypizza.cart.domain.model.CartLine
+import com.alexmls.lazypizza.cart_checkout.domain.model.CartLine
 
 interface GuestSnapshotPort {
     suspend fun snapshotGuest(): List<CartLine>

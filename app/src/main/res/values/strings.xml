@@ -52,4 +52,5 @@
     <string name="earliest_available_time">Earliest available time</string>
     <string name="schedule_time">Schedule time</string>
     <string name="earliest_pickup_time">EARLIEST PICKUP TIME:</string>
+    <string name="order_details">ORDER DETAILS</string>
 </resources>
