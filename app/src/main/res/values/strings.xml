@@ -36,7 +36,7 @@
     <string name="auth_resend_code">Resend code</string>
     <string name="auth_resend_timer">You can request a new code in %1$s</string>
     <string name="logout_title">Are you sure you want to log out?</string>
-    <string name="logout_cancel">Cancel</string>
+    <string name="cancel">Cancel</string>
     <string name="logout_confirm">Log Out</string>
 
     <string name="auth_error_invalid_phone">Invalid phone number</string>
@@ -53,4 +53,21 @@
     <string name="schedule_time">Schedule time</string>
     <string name="earliest_pickup_time">EARLIEST PICKUP TIME:</string>
     <string name="order_details">ORDER DETAILS</string>
+
+    <!-- %1$s = date, %2$s = time -->
+    <string name="pickup_time_value">Pickup: %1$s, %2$s</string>
+    <string name="select_date">SELECT DATE</string>
+
+    <!-- Validation messages for invalid pickup time -->
+    <string name="pickup_outside_working_hours">
+        Pickup available between 10:15 and 21:45
+    </string>
+    <string name="pickup_too_early">
+        Pickup is possible at least 15 minutes from the current time
+    </string>
+    <string name="confirm_pickup_time">Confirm pickup time</string>
+    <string name="ok">OK</string>
+    <string name="select_time">SELECT TIME</string>
+    <string name="hour_label">Hour</string>
+    <string name="minute_label">Minute</string>
 </resources>
