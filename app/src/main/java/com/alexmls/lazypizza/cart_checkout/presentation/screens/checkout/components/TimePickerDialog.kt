@@ -18,11 +18,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -49,7 +47,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.cart_checkout.domain.model.TimeValidationResult
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.time_formatter.TimeInputState
-import com.alexmls.lazypizza.core.designsystem.components.LpPrimaryButton
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.core.designsystem.theme.color
 import com.alexmls.lazypizza.core.designsystem.theme.titleXLargeMedium
@@ -201,29 +198,12 @@ private fun TimePickerDialogContent(
             }
 
             Spacer(Modifier.height(16.dp))
-            HorizontalDivider()
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(onClick = onDismissRequest) {
-                    Text(
-                        text = stringResource(R.string.cancel),
-                        style = typography().labelLarge,
-                        color = color().primary
-                    )
-                }
-                Spacer(Modifier.width(8.dp))
-
-                LpPrimaryButton(
-                    text = stringResource(R.string.ok),
-                    enabled = isConfirmEnabled,
-                    onClick = onConfirmClick
-                )
-            }
+            LpDialogConfirmBar(
+                isConfirmEnabled = isConfirmEnabled,
+                onDismiss = onDismissRequest,
+                onConfirm = onConfirmClick
+            )
         }
     }
 }

@@ -93,4 +93,12 @@ val Typography.bodyMediumBold: TextStyle
 val Typography.titleLargeMedium: TextStyle
     get() = titleLarge.copy(fontWeight = FontWeight.Medium)
 
+// time input
+val Typography.titleXLargeMedium: TextStyle
+    get() = titleLarge.copy(
+        fontSize = 44.sp,
+        lineHeight = 48.sp,
+        fontWeight = FontWeight.Medium
+    )
+
 

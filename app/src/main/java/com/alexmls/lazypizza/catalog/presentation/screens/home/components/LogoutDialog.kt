@@ -62,7 +62,7 @@ fun LogoutDialog(
                             onClick = dismiss
                         ) {
                             Text(
-                                text = stringResource(R.string.logout_cancel),
+                                text = stringResource(R.string.cancel),
                                 style = MaterialTheme.typography.titleSmall,
                                 color = MaterialTheme.colorScheme.primary
                             )
