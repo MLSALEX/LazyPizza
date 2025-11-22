@@ -1,4 +1,4 @@
-package com.alexmls.lazypizza.core.designsystem.components
+package com.alexmls.lazypizza.core.designsystem.components.top_bars
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -49,6 +48,7 @@ import com.alexmls.lazypizza.core.designsystem.theme.Logout
 import com.alexmls.lazypizza.core.designsystem.theme.Person
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumBold
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
+import com.alexmls.lazypizza.core.designsystem.theme.color
 
 @Immutable
 sealed interface NavBarConfig {
@@ -79,6 +79,7 @@ fun NavBar(
                     Text(
                         text = config.title,
                         style = MaterialTheme.typography.bodyMediumMedium,
+                        color = color().onPrimaryContainer,
                         modifier = Modifier.semantics { heading() }
                     )
                 }

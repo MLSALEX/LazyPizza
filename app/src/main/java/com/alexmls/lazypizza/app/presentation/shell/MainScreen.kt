@@ -55,6 +55,7 @@ fun MainScreen(
     val showBar = when {
         destination?.hasRoute<NavDestination.ProductDetails>() == true -> false
         destination?.hasRoute<NavDestination.Auth>() == true -> false
+        destination?.hasRoute<NavDestination.Checkup>() == true -> false
         else -> true
     }
 

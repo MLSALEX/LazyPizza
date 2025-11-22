@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.alexmls.lazypizza"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.animation)
     implementation(libs.androidx.room.common.jvm)
+    implementation(libs.material3)
+    implementation(libs.materialIconsExtended)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.junit)

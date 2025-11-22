@@ -70,4 +70,5 @@
     <string name="select_time">SELECT TIME</string>
     <string name="hour_label">Hour</string>
     <string name="minute_label">Minute</string>
+    <string name="order_checkout">Order Checkout</string>
 </resources>

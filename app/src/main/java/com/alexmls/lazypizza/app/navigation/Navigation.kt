@@ -12,7 +12,7 @@ import com.alexmls.lazypizza.app.navigation.utils.navigateToTab
 import com.alexmls.lazypizza.app.navigation.utils.toProductDetailsRoute
 import com.alexmls.lazypizza.authorization.presentation.AuthRoot
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.cart.CartRoot
-import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.CheckupRoot
+import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.CheckoutRoot
 import com.alexmls.lazypizza.catalog.presentation.screens.home.HomeRoot
 import com.alexmls.lazypizza.catalog.presentation.screens.product_details.ProductDetailsRoot
 import com.alexmls.lazypizza.history.presentation.HistoryRoot
@@ -109,7 +109,9 @@ fun Navigation(
             )
         }
         composable <NavDestination.Checkup>{
-            CheckupRoot()
+            CheckoutRoot(
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }

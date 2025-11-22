@@ -38,8 +38,8 @@ import com.alexmls.lazypizza.core.designsystem.LayoutType
 import com.alexmls.lazypizza.core.designsystem.LocalLayoutType
 import com.alexmls.lazypizza.core.designsystem.components.ButtonOverlay
 import com.alexmls.lazypizza.core.designsystem.components.LpPrimaryButton
-import com.alexmls.lazypizza.core.designsystem.components.NavBar
-import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
+import com.alexmls.lazypizza.core.designsystem.components.top_bars.NavBar
+import com.alexmls.lazypizza.core.designsystem.components.top_bars.NavBarConfig
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.cart_checkout.presentation.model.OrderItemUi
 import org.koin.androidx.compose.koinViewModel

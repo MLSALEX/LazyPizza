@@ -3,6 +3,7 @@ package com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.compon
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,7 +63,7 @@ fun OrderDetailsSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items.forEach { item ->
                     val itemId = item.id
@@ -94,8 +95,10 @@ private fun OrderDetailsHeader(
 
     Row(
         modifier = modifier
-            .clickable { onClickUp() }
-            .padding(vertical = 8.dp),
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClickUp() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -106,27 +109,36 @@ private fun OrderDetailsHeader(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Surface(
-            shape = MaterialTheme.shapes.small,
+        OrderDetailsToggleButton(
+            expanded = expanded
+        )
+    }
+}
 
-            border = BorderStroke(1.dp, color().outlineVariant),
-            modifier = Modifier.size(22.dp)
+@Composable
+private fun OrderDetailsToggleButton(
+    expanded: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        shape = MaterialTheme.shapes.small,
+        border = BorderStroke(1.dp, color().outlineVariant),
+        modifier = modifier.size(22.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (expanded) {
-                        Icons.Default.KeyboardArrowUp
-                    } else {
-                        Icons.Default.KeyboardArrowDown
-                    },
-                    contentDescription = null,
-                    tint = color().secondary,
-                    modifier = Modifier.size(14.dp)
-                )
-            }
+            Icon(
+                imageVector = if (expanded) {
+                    Icons.Default.KeyboardArrowUp
+                } else {
+                    Icons.Default.KeyboardArrowDown
+                },
+                contentDescription = null,
+                tint = color().secondary,
+                modifier = Modifier.size(14.dp)
+            )
         }
     }
 }
