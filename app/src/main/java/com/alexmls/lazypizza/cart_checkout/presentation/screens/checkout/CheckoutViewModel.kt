@@ -11,7 +11,6 @@ import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.compone
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.time_formatter.TimeInputFormatter
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.shared.CartController
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.shared.CartControllerImpl
-import com.alexmls.lazypizza.core.common.time.Clock
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,9 +23,8 @@ import java.time.format.DateTimeFormatter
 
 class CheckoutViewModel internal constructor(
     private val repo: CartRepository,
-    private val  observeAddons: ObserveRecommendedAddonsUseCase,
+    private val observeAddons: ObserveRecommendedAddonsUseCase,
     private val validatePickupDateTime: ValidatePickupDateTimeUseCase,
-    private val clock: Clock,
 ) : ViewModel() {
 
     private val controller: CartController = CartControllerImpl(
@@ -81,8 +79,7 @@ class CheckoutViewModel internal constructor(
     private fun handleDateSelected(action: CheckoutAction.DateSelected) {
         local.update { state ->
             state.copy(
-                selectedDate = action.date,
-                selectedTime = null,
+                draftDate = action.date,
                 timeValidation = null,
                 isDateDialogVisible = false,
                 isTimeDialogVisible = true
@@ -137,14 +134,16 @@ class CheckoutViewModel internal constructor(
 
     private fun handleTimeOkClicked() {
         local.update { state ->
-            val date = state.selectedDate ?: return@update state
+            val date = state.draftDate ?: state.selectedDate ?: return@update state
             val time = state.timeInput.parsedTime ?: return@update state
 
             val validation = validatePickupDateTime.validate(date, time)
 
             when (validation) {
                 TimeValidationResult.Ok -> state.copy(
+                    selectedDate = date,
                     selectedTime = time,
+                    draftDate = null,
                     timeValidation = validation,
                     isTimeDialogVisible = false,
                     pickupMode = PickupTimeMode.Scheduled,
@@ -166,7 +165,10 @@ class CheckoutViewModel internal constructor(
             if (!state.isPickupTimeConfirmed) {
                 resetToEarliest(state)
             } else {
-                state.copy(isTimeDialogVisible = false)
+                state.copy(
+                    isTimeDialogVisible = false,
+                    draftDate = null
+                )
             }
         }
     }
@@ -187,7 +189,10 @@ class CheckoutViewModel internal constructor(
             if (!state.isPickupTimeConfirmed) {
                 resetToEarliest(state)
             } else {
-                state.copy(isDateDialogVisible = false)
+                state.copy(
+                    isDateDialogVisible = false,
+                    draftDate = null
+                )
             }
         }
     }
@@ -200,11 +205,8 @@ class CheckoutViewModel internal constructor(
     }
 
     private fun computeEarliestPickupTime(): String {
-        val now = clock.now()
-            .withSecond(0)
-            .withNano(0)
-            .plusMinutes(15)
+        val earliest = validatePickupDateTime.earliestAvailableDateTime()
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        return now.toLocalTime().format(formatter)
+        return earliest.toLocalTime().format(formatter)
     }
 }

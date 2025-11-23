@@ -17,6 +17,7 @@ data class CheckoutState(
 
     val selectedDate: LocalDate? = null,
     val selectedTime: LocalTime? = null,
+    val draftDate: LocalDate? = null,
     val timeValidation: TimeValidationResult? = null,
     val isDateDialogVisible: Boolean = false,
     val isTimeDialogVisible: Boolean = false,

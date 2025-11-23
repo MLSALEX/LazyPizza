@@ -41,7 +41,7 @@ val cartModule = module {
     single { GuestCartRepository(get()) }
     single { UserSessionCartRepository() }
 
-    factory {
+    single {
         PickupScheduleConstraints(
             openTime = LocalTime.of(10, 15),
             closeTime = LocalTime.of(21, 45),
