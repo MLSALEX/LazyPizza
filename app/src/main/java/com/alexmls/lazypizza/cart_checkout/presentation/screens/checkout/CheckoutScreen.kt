@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alexmls.lazypizza.R
+import com.alexmls.lazypizza.cart_checkout.presentation.components.RecommendedAddonsRow
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.DatePickerDialog
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.OrderDetailsSection
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.PickupTimeSection
@@ -137,6 +138,14 @@ fun CheckoutScreen(
                     onIncItem = { id -> onAction(CheckoutAction.IncItem(id)) },
                     onDecItem = { id -> onAction(CheckoutAction.DecItem(id)) },
                     onRemoveItem = { id -> onAction(CheckoutAction.RemoveItem(id)) },
+                )
+                HorizontalDivider()
+                RecommendedAddonsRow(
+                    title = stringResource(R.string.recommended_to_add_to_your_order),
+                    items = state.cart.addons,
+                    onAddClick = { addon ->
+                        onAction(CheckoutAction.AddRecommended(addon))
+                    }
                 )
                 HorizontalDivider()
             }

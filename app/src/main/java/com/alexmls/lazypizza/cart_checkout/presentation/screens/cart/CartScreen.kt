@@ -31,7 +31,7 @@ import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.cart_checkout.presentation.model.AddonUi
 import com.alexmls.lazypizza.cart_checkout.presentation.components.OrderItemCard
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.cart.components.EmptyCartState
-import com.alexmls.lazypizza.cart_checkout.presentation.screens.cart.components.RecommendedAddonsRow
+import com.alexmls.lazypizza.cart_checkout.presentation.components.RecommendedAddonsRow
 import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
 import com.alexmls.lazypizza.core.designsystem.Adaptive
 import com.alexmls.lazypizza.core.designsystem.LayoutType
@@ -147,6 +147,7 @@ private fun CartMobile(
             }
 
             RecommendedAddonsRow(
+                title = stringResource(R.string.recommended_to_add_to_your_order),
                 items = state.addons,
                 onAddClick = onAddon,
                 modifier = Modifier.padding(bottom = 70.dp)
@@ -199,6 +200,7 @@ private fun CartWide(
             ) {
                 Column(Modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp)) {
                     RecommendedAddonsRow(
+                        title = stringResource(R.string.recommended_to_add_to_your_order),
                         items = state.addons,
                         onAddClick = onAddAddon,
                         modifier = Modifier.fillMaxWidth()

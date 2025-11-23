@@ -65,6 +65,8 @@ class CheckoutViewModel internal constructor(
                 launch { controller.dec(action.id) }
             is CheckoutAction.RemoveItem ->
                 launch { controller.remove(action.id) }
+            is CheckoutAction.AddRecommended ->
+                launch { controller.addAddon(action.addon) }
 
             CheckoutAction.DismissDatePicker -> handleDateCancelClicked()
             is CheckoutAction.DateSelected -> handleDateSelected(action)
