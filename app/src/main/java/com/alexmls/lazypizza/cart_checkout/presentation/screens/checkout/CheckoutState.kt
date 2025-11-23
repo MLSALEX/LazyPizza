@@ -26,4 +26,5 @@ data class CheckoutState(
         LocalTime.now().withSecond(0).withNano(0)
     ),
     val isPickupTimeConfirmed: Boolean = false,
+    val comment: String = "",
 )

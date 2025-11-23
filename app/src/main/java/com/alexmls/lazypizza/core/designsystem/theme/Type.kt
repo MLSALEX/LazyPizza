@@ -65,6 +65,12 @@ val Typography = Typography(
     ),
 
     // Label
+    labelLarge = TextStyle( // Label-1 Medium
+        fontFamily = InstrumentSans,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+    ),
     labelMedium = TextStyle( // Label-2 SemiBold
         fontFamily = InstrumentSans,
         fontWeight = FontWeight.SemiBold,
@@ -82,6 +88,10 @@ val Typography = Typography(
    // Body-1-Medium 16/22
 val Typography.bodyLargeMedium: TextStyle
     get() = bodyLarge.copy(fontWeight = FontWeight.Medium)
+
+// Label-1-SemiBold 14/20
+val Typography.labelLargeSemiBold: TextStyle
+    get() = labelLarge.copy(fontWeight = FontWeight.SemiBold)
 
  // Body-3-Medium 14/18
 val Typography.bodyMediumMedium: TextStyle

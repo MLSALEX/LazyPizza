@@ -75,7 +75,15 @@ class CheckoutViewModel internal constructor(
             is CheckoutAction.TimeMinuteChanged -> handleTimeMinuteChanged(action)
             CheckoutAction.TimeOkClicked        -> handleTimeOkClicked()
             CheckoutAction.TimeCancelClicked    -> handleTimeCancelClicked()
+
+            is CheckoutAction.CommentChanged ->
+                local.update { it.copy(comment = action.text) }
+
+            CheckoutAction.SubmitOrder -> handleSubmitOrder()
         }
+    }
+    private fun handleSubmitOrder() {
+        println("Order submitted with comment: ${local.value.comment}")
     }
 
     private fun handleDateSelected(action: CheckoutAction.DateSelected) {
@@ -211,4 +219,6 @@ class CheckoutViewModel internal constructor(
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
         return earliest.toLocalTime().format(formatter)
     }
+
+
 }

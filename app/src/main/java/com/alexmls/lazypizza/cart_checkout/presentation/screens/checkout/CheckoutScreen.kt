@@ -17,6 +17,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -26,10 +27,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.cart_checkout.presentation.components.RecommendedAddonsRow
+import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.CommentsSection
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.DatePickerDialog
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.OrderDetailsSection
+import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.OrderSummaryBar
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.PickupTimeSection
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.TimePickerDialog
+import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
 import com.alexmls.lazypizza.core.designsystem.components.top_bars.CheckoutTopBar
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.core.designsystem.theme.color
@@ -87,7 +91,6 @@ fun CheckoutScreen(
             }
         )
     }
-
     val sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
     Surface(
         modifier = Modifier
@@ -115,7 +118,7 @@ fun CheckoutScreen(
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ){
@@ -148,7 +151,18 @@ fun CheckoutScreen(
                     }
                 )
                 HorizontalDivider()
+                CommentsSection(
+                    text = state.comment,
+                    onTextChange = { onAction(CheckoutAction.CommentChanged(it)) }
+                )
             }
+            val totalFormatted = remember(state.cart.totalCents) {
+                UsdFormat.format(state.cart.totalCents)
+            }
+            OrderSummaryBar(
+                totalFormatted =  totalFormatted,
+                onPlaceOrder = { onAction(CheckoutAction.SubmitOrder) }
+            )
         }
     }
 }

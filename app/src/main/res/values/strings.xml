@@ -71,4 +71,9 @@
     <string name="hour_label">Hour</string>
     <string name="minute_label">Minute</string>
     <string name="order_checkout">Order Checkout</string>
+    <string name="comments">COMMENTS</string>
+    <string name="add_comment">Add Comment</string>
+
+    <string name="order_total">ORDER TOTAL:</string>
+    <string name="place_order">Place Order</string>
 </resources>

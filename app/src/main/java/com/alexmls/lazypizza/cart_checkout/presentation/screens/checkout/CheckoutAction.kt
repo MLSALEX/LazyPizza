@@ -21,4 +21,7 @@ sealed interface CheckoutAction {
     data class TimeMinuteChanged(val value: String) : CheckoutAction
     data object TimeOkClicked : CheckoutAction
     data object TimeCancelClicked : CheckoutAction
+
+    data class CommentChanged(val text: String) : CheckoutAction
+    data object SubmitOrder : CheckoutAction
 }
