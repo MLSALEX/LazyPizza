@@ -93,6 +93,10 @@ val Typography.bodyLargeMedium: TextStyle
 val Typography.labelLargeSemiBold: TextStyle
     get() = labelLarge.copy(fontWeight = FontWeight.SemiBold)
 
+// Label-2- Medium 12/16
+val Typography.labelMediumMedium: TextStyle
+    get() = labelMedium.copy(fontWeight = FontWeight.Medium)
+
  // Body-3-Medium 14/18
 val Typography.bodyMediumMedium: TextStyle
     get() = bodyMedium.copy(fontWeight = FontWeight.Medium)

@@ -27,4 +27,8 @@ data class CheckoutState(
     ),
     val isPickupTimeConfirmed: Boolean = false,
     val comment: String = "",
+
+    val isOrderConfirmed: Boolean = false,
+    val orderNumber: String? = null,
+    val confirmationPickupTime: String? = null
 )

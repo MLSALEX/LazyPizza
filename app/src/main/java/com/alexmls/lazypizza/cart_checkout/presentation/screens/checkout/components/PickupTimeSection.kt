@@ -24,6 +24,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
+import com.alexmls.lazypizza.core.designsystem.LayoutType
+import com.alexmls.lazypizza.core.designsystem.LocalLayoutType
 import com.alexmls.lazypizza.core.designsystem.theme.bodyMediumMedium
 import com.alexmls.lazypizza.core.designsystem.theme.color
 import com.alexmls.lazypizza.core.designsystem.theme.pillShape
@@ -45,7 +47,8 @@ fun PickupTimeSection(
     scheduledDate: LocalDate?,
     scheduledTime: LocalTime?,
     onModeChange: (PickupTimeMode) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    layout: LayoutType = LocalLayoutType.current
 ) {
     val onModeChangeState by rememberUpdatedState(onModeChange)
 
@@ -87,21 +90,25 @@ fun PickupTimeSection(
             color = color().secondary
         )
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            PickupTimeOption(
-                title = stringResource(R.string.earliest_available_time),
-                selected = selectedMode == PickupTimeMode.Earliest,
-                onClick = onEarliestClick
-            )
-
-            PickupTimeOption(
-                title = stringResource(R.string.schedule_time),
-                selected = selectedMode == PickupTimeMode.Scheduled,
-                onClick = onScheduledModeClick
-            )
-        }
+        TwoColumnLayout(
+            layout = layout,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalSpacing = 8.dp,
+            left = {
+                PickupTimeOption(
+                    title = stringResource(R.string.earliest_available_time),
+                    selected = selectedMode == PickupTimeMode.Earliest,
+                    onClick = onEarliestClick
+                )
+            },
+            right = {
+                PickupTimeOption(
+                    title = stringResource(R.string.schedule_time),
+                    selected = selectedMode == PickupTimeMode.Scheduled,
+                    onClick = onScheduledModeClick
+                )
+            }
+        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),

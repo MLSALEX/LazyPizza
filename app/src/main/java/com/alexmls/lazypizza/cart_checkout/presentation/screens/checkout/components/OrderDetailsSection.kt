@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.cart_checkout.presentation.components.OrderItemCard
 import com.alexmls.lazypizza.cart_checkout.presentation.model.OrderItemUi
+import com.alexmls.lazypizza.core.designsystem.LayoutType
+import com.alexmls.lazypizza.core.designsystem.LocalLayoutType
 import com.alexmls.lazypizza.core.designsystem.theme.color
 import com.alexmls.lazypizza.core.designsystem.theme.typography
 
@@ -42,7 +44,8 @@ fun OrderDetailsSection(
     onIncItem: (String) -> Unit,
     onDecItem: (String) -> Unit,
     onRemoveItem: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    layout: LayoutType = LocalLayoutType.current
 ) {
     val onToggleUp by rememberUpdatedState(onToggleExpanded)
     val onIncUp by rememberUpdatedState(onIncItem)
@@ -59,25 +62,22 @@ fun OrderDetailsSection(
         )
 
         AnimatedVisibility(visible = expanded) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items.forEach { item ->
-                    val itemId = item.id
+            when (layout) {
+                LayoutType.Mobile -> {
+                    OrderDetailsListSingleColumn(
+                        items = items,
+                        onIncUp = onIncUp,
+                        onDecUp = onDecUp,
+                        onRemoveUp = onRemoveUp
+                    )
+                }
 
-                    val inc = remember(itemId, onIncUp) { { onIncUp(itemId) } }
-                    val dec = remember(itemId, onDecUp) { { onDecUp(itemId) } }
-                    val remove = remember(itemId, onRemoveUp) { { onRemoveUp(itemId) } }
-
-                    OrderItemCard(
-                        item = item,
-                        onInc = inc,
-                        onDec = dec,
-                        onRemove = remove,
-                        modifier = Modifier.fillMaxWidth()
+                LayoutType.Wide -> {
+                    OrderDetailsListTwoColumns(
+                        items = items,
+                        onIncUp = onIncUp,
+                        onDecUp = onDecUp,
+                        onRemoveUp = onRemoveUp
                     )
                 }
             }
@@ -141,4 +141,97 @@ private fun OrderDetailsToggleButton(
             )
         }
     }
+}
+@Composable
+private fun OrderDetailsListSingleColumn(
+    items: List<OrderItemUi>,
+    onIncUp: (String) -> Unit,
+    onDecUp: (String) -> Unit,
+    onRemoveUp: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items.forEach { item ->
+            OrderDetailsItemRow(
+                item = item,
+                onIncUp = onIncUp,
+                onDecUp = onDecUp,
+                onRemoveUp = onRemoveUp
+            )
+        }
+    }
+}
+
+@Composable
+private fun OrderDetailsListTwoColumns(
+    items: List<OrderItemUi>,
+    onIncUp: (String) -> Unit,
+    onDecUp: (String) -> Unit,
+    onRemoveUp: (String) -> Unit
+) {
+    val chunks = remember(items) {
+        items.chunked((items.size + 1) / 2)
+    }
+    val leftItems = chunks.getOrNull(0).orEmpty()
+    val rightItems = chunks.getOrNull(1).orEmpty()
+
+    TwoColumnLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp),
+        horizontalSpacing = 12.dp,
+        left = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                leftItems.forEach { item ->
+                    OrderDetailsItemRow(
+                        item = item,
+                        onIncUp = onIncUp,
+                        onDecUp = onDecUp,
+                        onRemoveUp = onRemoveUp
+                    )
+                }
+            }
+        },
+        right = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rightItems.forEach { item ->
+                    OrderDetailsItemRow(
+                        item = item,
+                        onIncUp = onIncUp,
+                        onDecUp = onDecUp,
+                        onRemoveUp = onRemoveUp
+                    )
+                }
+            }
+        }
+    )
+}
+@Composable
+private fun OrderDetailsItemRow(
+    item: OrderItemUi,
+    onIncUp: (String) -> Unit,
+    onDecUp: (String) -> Unit,
+    onRemoveUp: (String) -> Unit
+) {
+    val itemId = item.id
+
+    val inc = remember(itemId, onIncUp) { { onIncUp(itemId) } }
+    val dec = remember(itemId, onDecUp) { { onDecUp(itemId) } }
+    val remove = remember(itemId, onRemoveUp) { { onRemoveUp(itemId) } }
+
+    OrderItemCard(
+        item = item,
+        onInc = inc,
+        onDec = dec,
+        onRemove = remove,
+        modifier = Modifier.fillMaxWidth()
+    )
 }

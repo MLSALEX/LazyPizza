@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.cart_checkout.presentation.components.RecommendedAddonsRow
+import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.CheckoutConfirmationContent
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.CommentsSection
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.DatePickerDialog
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.OrderDetailsSection
@@ -43,6 +44,7 @@ import java.time.LocalDate
 @Composable
 fun CheckoutRoot(
     onBackClick: () -> Unit,
+    onNavigateToMenu: () -> Unit,
     viewModel: CheckoutViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -51,7 +53,8 @@ fun CheckoutRoot(
         state = state,
         onAction = viewModel::onAction,
         isDateSelectable = viewModel::isDateSelectable,
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        onNavigateToMenu = onNavigateToMenu
     )
 }
 
@@ -61,7 +64,11 @@ fun CheckoutScreen(
     onAction: (CheckoutAction) -> Unit,
     isDateSelectable: (LocalDate) -> Boolean,
     onBackClick: () -> Unit,
+    onNavigateToMenu: () -> Unit,
 ) {
+    val topBarBack: () -> Unit =
+        if (state.isOrderConfirmed) onNavigateToMenu else onBackClick
+
     if (state.isDateDialogVisible) {
         DatePickerDialog(
             onDismissRequest = {
@@ -91,12 +98,17 @@ fun CheckoutScreen(
             }
         )
     }
+    val totalFormatted = remember(state.cart.totalCents) {
+        UsdFormat.format(state.cart.totalCents)
+    }
     val sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
     Surface(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(
-                WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
+                WindowInsets.safeDrawing.only(
+                    WindowInsetsSides.Top + WindowInsetsSides.Bottom
+                )
             )
             .shadow(
                 elevation = 8.dp,
@@ -109,60 +121,66 @@ fun CheckoutScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                .padding(start = 16.dp, end = 16.dp),
         ) {
             CheckoutTopBar(
                 title = stringResource(R.string.order_checkout),
-                onBackClick = onBackClick
+                onBackClick = topBarBack
             )
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ){
-                PickupTimeSection(
-                    selectedMode = state.pickupMode,
-                    earliestTime = state.earliestPickupTime,
-                    scheduledDate = state.selectedDate,
-                    scheduledTime = state.selectedTime,
-                    onModeChange = { mode ->
-                        onAction(CheckoutAction.ChangePickupMode(mode))
-                    },
+            if (state.isOrderConfirmed) {
+                CheckoutConfirmationContent(
+                    orderNumber = state.orderNumber.orEmpty(),
+                    pickupTime = state.confirmationPickupTime.orEmpty(),
+                    onBackToMenuClick = onNavigateToMenu
+                )
+            } else {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                )
-                HorizontalDivider()
-                OrderDetailsSection(
-                    items = state.cart.items,
-                    expanded = state.isOrderDetailsExpanded,
-                    onToggleExpanded = { onAction(CheckoutAction.ToggleOrderDetails) },
-                    onIncItem = { id -> onAction(CheckoutAction.IncItem(id)) },
-                    onDecItem = { id -> onAction(CheckoutAction.DecItem(id)) },
-                    onRemoveItem = { id -> onAction(CheckoutAction.RemoveItem(id)) },
-                )
-                HorizontalDivider()
-                RecommendedAddonsRow(
-                    title = stringResource(R.string.recommended_to_add_to_your_order),
-                    items = state.cart.addons,
-                    onAddClick = { addon ->
-                        onAction(CheckoutAction.AddRecommended(addon))
-                    }
-                )
-                HorizontalDivider()
-                CommentsSection(
-                    text = state.comment,
-                    onTextChange = { onAction(CheckoutAction.CommentChanged(it)) }
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ){
+                    PickupTimeSection(
+                        selectedMode = state.pickupMode,
+                        earliestTime = state.earliestPickupTime,
+                        scheduledDate = state.selectedDate,
+                        scheduledTime = state.selectedTime,
+                        onModeChange = { mode ->
+                            onAction(CheckoutAction.ChangePickupMode(mode))
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                    HorizontalDivider()
+                    OrderDetailsSection(
+                        items = state.cart.items,
+                        expanded = state.isOrderDetailsExpanded,
+                        onToggleExpanded = { onAction(CheckoutAction.ToggleOrderDetails) },
+                        onIncItem = { id -> onAction(CheckoutAction.IncItem(id)) },
+                        onDecItem = { id -> onAction(CheckoutAction.DecItem(id)) },
+                        onRemoveItem = { id -> onAction(CheckoutAction.RemoveItem(id)) },
+                    )
+                    HorizontalDivider()
+                    RecommendedAddonsRow(
+                        title = stringResource(R.string.recommended_to_add_to_your_order),
+                        items = state.cart.addons,
+                        onAddClick = { addon ->
+                            onAction(CheckoutAction.AddRecommended(addon))
+                        }
+                    )
+                    HorizontalDivider()
+                    CommentsSection(
+                        text = state.comment,
+                        onTextChange = { onAction(CheckoutAction.CommentChanged(it)) }
+                    )
+                }
+
+                OrderSummaryBar(
+                    totalFormatted =  totalFormatted,
+                    onPlaceOrder = { onAction(CheckoutAction.SubmitOrder) }
                 )
             }
-            val totalFormatted = remember(state.cart.totalCents) {
-                UsdFormat.format(state.cart.totalCents)
-            }
-            OrderSummaryBar(
-                totalFormatted =  totalFormatted,
-                onPlaceOrder = { onAction(CheckoutAction.SubmitOrder) }
-            )
         }
     }
 }
@@ -175,11 +193,12 @@ private fun Preview() {
     LazyPizzaTheme {
         CheckoutScreen(
             state = CheckoutState(
-                isOrderDetailsExpanded = true
+                isOrderConfirmed = true
             ),
             onAction = {},
             isDateSelectable = { _ -> true},
-            onBackClick = {}
+            onBackClick = {},
+            onNavigateToMenu = {}
         )
     }
 }

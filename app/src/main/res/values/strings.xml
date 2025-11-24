@@ -76,4 +76,11 @@
 
     <string name="order_total">ORDER TOTAL:</string>
     <string name="place_order">Place Order</string>
+
+    <string name="order_confirmation_title">Your order has been placed!</string>
+    <string name="order_confirmation_subtitle">
+    Thank you for your order! Please come at the indicated time.</string>
+    <string name="order_number_label">ORDER NUMBER:</string>
+    <string name="pickup_time_label">PICKUP TIME:</string>
+    <string name="order_number_value">#%1$s</string>
 </resources>

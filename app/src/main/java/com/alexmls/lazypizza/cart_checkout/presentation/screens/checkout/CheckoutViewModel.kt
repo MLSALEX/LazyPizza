@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class CheckoutViewModel internal constructor(
@@ -83,7 +84,18 @@ class CheckoutViewModel internal constructor(
         }
     }
     private fun handleSubmitOrder() {
-        println("Order submitted with comment: ${local.value.comment}")
+        local.update { state ->
+            val orderNumber = generateOrderNumber()
+            val pickupTime = computeConfirmationPickupTime(state)
+
+            state.copy(
+                isOrderConfirmed = true,
+                orderNumber = orderNumber,
+                confirmationPickupTime = pickupTime,
+                isDateDialogVisible = false,
+                isTimeDialogVisible = false
+            )
+        }
     }
 
     private fun handleDateSelected(action: CheckoutAction.DateSelected) {
@@ -219,6 +231,32 @@ class CheckoutViewModel internal constructor(
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
         return earliest.toLocalTime().format(formatter)
     }
+    private fun generateOrderNumber(): String {
+        // Simulate real order number
+        return (10000..99999).random().toString()
+    }
 
 
+    private fun computeConfirmationPickupTime(state: CheckoutState): String {
+        return when (state.pickupMode) {
+            PickupTimeMode.Earliest -> {
+                // show earliest available time from state
+                state.earliestPickupTime
+            }
+
+            PickupTimeMode.Scheduled -> {
+                val date = state.selectedDate
+                val time = state.selectedTime
+
+                if (date != null && time != null) {
+                    val formatter = DateTimeFormatter.ofPattern("MMMM d, HH:mm")
+                    val dateTime = LocalDateTime.of(date, time)
+                    dateTime.format(formatter)
+                } else {
+                    // fallback just in case
+                    state.earliestPickupTime
+                }
+            }
+        }
+    }
 }

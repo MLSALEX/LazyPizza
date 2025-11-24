@@ -110,7 +110,10 @@ fun Navigation(
         }
         composable <NavDestination.Checkup>{
             CheckoutRoot(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onNavigateToMenu = {
+                    navigateToTab(navController, NavTab.Menu)
+                }
             )
         }
     }
