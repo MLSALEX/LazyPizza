@@ -42,4 +42,8 @@ internal class GuestCartRepository(
     override suspend fun clearGuest() = dao.clearAll()
     override suspend fun snapshotGuest(): List<CartLine> =
         dao.snapshot().map { it.toDomain() }
+
+    override suspend fun clear() {
+        clearGuest()
+    }
 }

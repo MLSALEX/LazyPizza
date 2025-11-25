@@ -27,7 +27,6 @@ val cartModule = module {
     single<CartReadApi>  { get<CartWriteApi>() as CartReadApi }
 
     factory { ObserveRecommendedAddonsUseCase(get<CatalogReadApi>(), get<CartRepository>()) }
-
     single {
         Room.databaseBuilder(
             androidContext(),

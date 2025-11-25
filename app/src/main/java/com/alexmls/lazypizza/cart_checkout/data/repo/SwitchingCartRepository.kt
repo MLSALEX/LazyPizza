@@ -51,4 +51,10 @@ internal class SwitchingCartRepository(
             is AuthState.Authenticated -> userRepo.remove(id)
         }
     }
+    override suspend fun clear() {
+        when (currentAuth()) {
+            is AuthState.Anonymous   -> guestRepo.clear()
+            is AuthState.Authenticated -> userRepo.clear()
+        }
+    }
 }

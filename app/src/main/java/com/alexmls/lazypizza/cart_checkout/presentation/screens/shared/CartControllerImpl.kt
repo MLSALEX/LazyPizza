@@ -82,4 +82,7 @@ internal class CartControllerImpl(
             )
         )
     }
+    override suspend fun clear() {
+        repo.clear()
+    }
 }

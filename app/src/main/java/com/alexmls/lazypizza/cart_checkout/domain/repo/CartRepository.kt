@@ -11,4 +11,5 @@ internal interface CartRepository {
     fun observeCart(): Flow<List<CartLine>>
     suspend fun setQty(id: CartLineId, qty: Int)
     suspend fun remove(id: CartLineId)
+    suspend fun clear()
 }

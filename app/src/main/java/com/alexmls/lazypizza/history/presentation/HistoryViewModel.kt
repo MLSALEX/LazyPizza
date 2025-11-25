@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alexmls.lazypizza.core.domain.auth.AuthRepository
 import com.alexmls.lazypizza.core.domain.auth.AuthState
-import com.alexmls.lazypizza.history.presentation.preview.HistoryDemoData
+import com.alexmls.lazypizza.core.domain.order.usecase.ObserveUserOrdersUseCase
+import com.alexmls.lazypizza.history.presentation.ui_model.toCardUiModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,10 +18,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HistoryViewModel(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val observeUserOrders: ObserveUserOrdersUseCase
 ) : ViewModel() {
 
-    private var hasLoadedDemoData = false
+    private var ordersJob: Job? = null
 
     private val _events = Channel<HistoryEvent>(Channel.BUFFERED)
     val events: Flow<HistoryEvent> = _events.receiveAsFlow()
@@ -44,31 +47,36 @@ class HistoryViewModel(
 
                     _state.update { it.copy(isAuthorized = isAuthorized) }
 
-                    if (isAuthorized && !hasLoadedDemoData) {
-                        // For demo: load static orders once
-                        loadDemoOrders()
-                        hasLoadedDemoData = true
-                    }
-
-                    if (!isAuthorized) {
-                        // Clear orders when user logs out
+                    if (isAuthorized) {
+                        startObservingOrders()
+                    } else {
+                        // останавливаем подписку и чистим список
+                        ordersJob?.cancel()
                         _state.update {
                             it.copy(
                                 isLoading = false,
                                 orders = emptyList()
                             )
                         }
-                        hasLoadedDemoData = false
                     }
                 }
         }
     }
-    private fun loadDemoOrders() {
-        _state.update {
-            it.copy(
-                isLoading = false,
-                orders = HistoryDemoData.orders
-            )
+    private fun startObservingOrders() {
+        ordersJob?.cancel()
+
+        ordersJob = viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            observeUserOrders()
+                .collect { orders ->
+                    _state.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            orders = orders.map { it.toCardUiModel() }
+                        )
+                    }
+                }
         }
     }
     fun onAction(action: HistoryAction) {

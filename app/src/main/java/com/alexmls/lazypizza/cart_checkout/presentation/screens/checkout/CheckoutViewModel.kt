@@ -1,31 +1,40 @@
 package com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alexmls.lazypizza.cart_checkout.domain.model.TimeValidationResult
 import com.alexmls.lazypizza.cart_checkout.domain.repo.CartRepository
 import com.alexmls.lazypizza.cart_checkout.domain.usecase.ObserveRecommendedAddonsUseCase
 import com.alexmls.lazypizza.cart_checkout.domain.usecase.ValidatePickupDateTimeUseCase
+import com.alexmls.lazypizza.cart_checkout.presentation.mapper.toDomain
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.cart.CartState
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.components.PickupTimeMode
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.checkout.time_formatter.TimeInputFormatter
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.shared.CartController
 import com.alexmls.lazypizza.cart_checkout.presentation.screens.shared.CartControllerImpl
+import com.alexmls.lazypizza.core.domain.auth.NotAuthenticatedException
+import com.alexmls.lazypizza.core.domain.order.OrderItem
+import com.alexmls.lazypizza.core.domain.order.usecase.PlaceOrderUseCase
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class CheckoutViewModel internal constructor(
     private val repo: CartRepository,
     private val observeAddons: ObserveRecommendedAddonsUseCase,
     private val validatePickupDateTime: ValidatePickupDateTimeUseCase,
+    private val placeOrder: PlaceOrderUseCase,
 ) : ViewModel() {
 
     private val controller: CartController = CartControllerImpl(
@@ -39,6 +48,8 @@ class CheckoutViewModel internal constructor(
             earliestPickupTime = computeEarliestPickupTime()
         )
     )
+    private val _events = Channel<CheckoutEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     val state: StateFlow<CheckoutState> =
         combine(
@@ -83,18 +94,51 @@ class CheckoutViewModel internal constructor(
             CheckoutAction.SubmitOrder -> handleSubmitOrder()
         }
     }
-    private fun handleSubmitOrder() {
-        local.update { state ->
-            val orderNumber = generateOrderNumber()
-            val pickupTime = computeConfirmationPickupTime(state)
 
-            state.copy(
-                isOrderConfirmed = true,
-                orderNumber = orderNumber,
-                confirmationPickupTime = pickupTime,
-                isDateDialogVisible = false,
-                isTimeDialogVisible = false
-            )
+    private fun handleSubmitOrder() {
+        val current = state.value
+
+        if (current.cart.isEmpty) {
+            return
+        }
+
+        val pickupTimeMillis = computePickupTimeMillis(current) ?: return
+
+        val orderItems: List<OrderItem> = current.cart.items.map { uiItem ->
+            uiItem.toDomain()
+        }
+
+        val totalAmountCents: Long = current.cart.totalCents.toLong()
+
+        viewModelScope.launch {
+            try {
+                val order = placeOrder(
+                    pickupTimeMillis = pickupTimeMillis,
+                    items = orderItems,
+                    totalAmountCents = totalAmountCents
+                )
+
+                controller.clear()
+
+                local.update { localState ->
+                    localState.copy(
+                        isOrderConfirmed = true,
+                        orderNumber = order.orderNumber,
+                        confirmationPickupTime = computeConfirmationPickupTime(localState),
+                        isDateDialogVisible = false,
+                        isTimeDialogVisible = false
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("CheckoutViewModel", "Failed to place order", e)
+                val message = when (e) {
+                    is NotAuthenticatedException -> "Please sign in to place your order"
+                    else -> "Something went wrong. Please try again"
+                }
+                _events.send(
+                    CheckoutEvent.ShowError(message)
+                )
+            }
         }
     }
 
@@ -206,6 +250,7 @@ class CheckoutViewModel internal constructor(
             isPickupTimeConfirmed = false,
             earliestPickupTime = computeEarliestPickupTime()
         )
+
     private fun handleDateCancelClicked() {
         local.update { state ->
             if (!state.isPickupTimeConfirmed) {
@@ -228,35 +273,49 @@ class CheckoutViewModel internal constructor(
 
     private fun computeEarliestPickupTime(): String {
         val earliest = validatePickupDateTime.earliestAvailableDateTime()
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        return earliest.toLocalTime().format(formatter)
-    }
-    private fun generateOrderNumber(): String {
-        // Simulate real order number
-        return (10000..99999).random().toString()
+        val time = earliest.toLocalTime()
+        return time.format(TIME_ONLY_FORMATTER)
     }
 
+    private fun computePickupTimeMillis(state: CheckoutState): Long? {
+        val dateTime = resolvePickupDateTime(state) ?: return null
+
+        return dateTime
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
+    }
 
     private fun computeConfirmationPickupTime(state: CheckoutState): String {
+        val dateTime = resolvePickupDateTime(state)
+
+        return if (dateTime != null) {
+            dateTime.format(CONFIRMATION_FORMATTER)
+        } else {
+            state.earliestPickupTime
+        }
+    }
+
+    private fun resolvePickupDateTime(state: CheckoutState): LocalDateTime? {
         return when (state.pickupMode) {
             PickupTimeMode.Earliest -> {
-                // show earliest available time from state
-                state.earliestPickupTime
+                validatePickupDateTime.earliestAvailableDateTime()
             }
 
             PickupTimeMode.Scheduled -> {
                 val date = state.selectedDate
                 val time = state.selectedTime
+                if (date == null || time == null) return null
 
-                if (date != null && time != null) {
-                    val formatter = DateTimeFormatter.ofPattern("MMMM d, HH:mm")
-                    val dateTime = LocalDateTime.of(date, time)
-                    dateTime.format(formatter)
-                } else {
-                    // fallback just in case
-                    state.earliestPickupTime
-                }
+                LocalDateTime.of(date, time)
             }
         }
+    }
+    companion object {
+        private val TIME_ONLY_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("HH:mm")
+
+        private val CONFIRMATION_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("MMMM d, HH:mm")
     }
 }

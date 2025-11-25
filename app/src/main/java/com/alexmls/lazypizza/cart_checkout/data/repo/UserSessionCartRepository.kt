@@ -67,4 +67,8 @@ internal class UserSessionCartRepository : CartRepository, UserSessionPort {
     override suspend fun clearUser() {
         _lines.value = emptyMap()
     }
+
+    override suspend fun clear() {
+        clearUser()
+    }
 }

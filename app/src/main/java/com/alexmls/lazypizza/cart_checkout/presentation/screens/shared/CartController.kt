@@ -11,4 +11,6 @@ internal interface CartController {
     suspend fun dec(id: String)
     suspend fun remove(id: String)
     suspend fun addAddon(addon: AddonUi)
+
+    suspend fun clear()
 }
