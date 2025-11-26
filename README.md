@@ -24,9 +24,25 @@ developed as part of the **Mobile Dev Campus challenge by Philipp Lackner**.
 <details>
 <summary>▶ Watch video demo</summary>
 
-<br>
-
-https://github.com/user-attachments/assets/4ca5bc22-2b8c-4a84-b16c-73db601536ec
+<table>
+  <tr>
+    <td>
+      <!-- # 1 -->
+      <video src="https://github.com/user-attachments/assets/4ca5bc22-2b8c-4a84-b16c-73db601536ec"
+             controls
+             width="320">
+      </video>
+    </td>
+    
+    <td>
+      <!-- # 4 -->
+      <video src="https://github.com/user-attachments/assets/f2dafcdf-cdfe-4e3a-8c2f-e86257a2c422"
+             controls
+             width="320">
+      </video>
+    </td>
+  </tr>
+</table>
 
 </details>
 
