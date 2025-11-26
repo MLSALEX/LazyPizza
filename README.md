@@ -5,7 +5,8 @@ developed as part of the **Mobile Dev Campus challenge by Philipp Lackner**.
 
 ## Tech Stack  
 - **Kotlin**
-- **Jetpack Compose** (Material 3, Adaptive UI)  
+- **Jetpack Compose** (Material 3, Adaptive UI)
+- **Clean Architecture + SOLID**
 - **Koin** for Dependency Injection  
 - **Firebase Firestore**  
 - **Typed Navigation** with Kotlin Serialization  
@@ -14,7 +15,7 @@ developed as part of the **Mobile Dev Campus challenge by Philipp Lackner**.
 
 ## Highlights  
 - Reactive UI with optimized recompositions  
-- Modular feature design: Menu, Cart, History  
+- Modular feature design: Menu, Cart_Checkout, History, Auth  
 - Real-time cloud data with automatic offline caching (Firestore)  
 - Adaptive layouts and custom design system  
 - Stateless, reusable, UI components
