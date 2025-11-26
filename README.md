@@ -34,8 +34,8 @@ developed as part of the **Mobile Dev Campus challenge by Philipp Lackner**.
       </video>
     </td>
     <td>
-      <!-- # 2 -->
-      <video src="https://github.com/user-attachments/assets/4ca5bc22-2b8c-4a84-b16c-73db601536ec"
+      <!-- # 4 -->
+      <video src="https://github.com/user-attachments/assets/f2dafcdf-cdfe-4e3a-8c2f-e86257a2c422"
              controls
              width="320">
       </video>
