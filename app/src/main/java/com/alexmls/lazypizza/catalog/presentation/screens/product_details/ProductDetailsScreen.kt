@@ -46,8 +46,8 @@ import com.alexmls.lazypizza.catalog.presentation.utils.UsdFormat
 import com.alexmls.lazypizza.core.designsystem.Adaptive
 import com.alexmls.lazypizza.core.designsystem.card_style.rememberLpCardStyle
 import com.alexmls.lazypizza.core.designsystem.components.ButtonOverlay
-import com.alexmls.lazypizza.core.designsystem.components.NavBar
-import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
+import com.alexmls.lazypizza.core.designsystem.components.top_bars.NavBar
+import com.alexmls.lazypizza.core.designsystem.components.top_bars.NavBarConfig
 import com.alexmls.lazypizza.core.designsystem.components.ProductImage
 import com.alexmls.lazypizza.core.designsystem.rememberLayoutType
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme

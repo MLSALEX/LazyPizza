@@ -3,12 +3,15 @@ package com.alexmls.lazypizza.app.di
 import com.alexmls.lazypizza.app.App
 import com.alexmls.lazypizza.app.presentation.shell.MainViewModel
 import com.alexmls.lazypizza.app.session.CartSessionOrchestrator
-import com.alexmls.lazypizza.cart.data.repo.GuestCartRepository
-import com.alexmls.lazypizza.cart.data.repo.SwitchingCartRepository
-import com.alexmls.lazypizza.cart.data.repo.UserSessionCartRepository
-import com.alexmls.lazypizza.cart.domain.repo.CartRepository
+import com.alexmls.lazypizza.cart_checkout.data.repo.GuestCartRepository
+import com.alexmls.lazypizza.cart_checkout.data.repo.SwitchingCartRepository
+import com.alexmls.lazypizza.cart_checkout.data.repo.UserSessionCartRepository
+import com.alexmls.lazypizza.cart_checkout.domain.repo.CartRepository
+import com.alexmls.lazypizza.cart_checkout.domain.usecase.ValidatePickupDateTimeUseCase
 import com.alexmls.lazypizza.core.common.ActivityProvider
 import com.alexmls.lazypizza.core.common.AnonymousAuthInitializer
+import com.alexmls.lazypizza.core.common.time.Clock
+import com.alexmls.lazypizza.core.common.time.SystemClock
 import com.alexmls.lazypizza.core.domain.auth.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import org.koin.android.ext.koin.androidApplication
@@ -42,5 +45,13 @@ val appModule = module {
         ).apply { start() }
     }
     single { AnonymousAuthInitializer(get()) }
+
+    single<Clock> { SystemClock() }
+    factory {
+        ValidatePickupDateTimeUseCase(
+            clock = get(),
+            constraints = get()
+        )
+    }
     viewModelOf(::MainViewModel)
 }

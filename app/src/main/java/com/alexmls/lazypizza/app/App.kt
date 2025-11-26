@@ -4,8 +4,9 @@ import android.app.Application
 import com.alexmls.lazypizza.app.di.appModule
 import com.alexmls.lazypizza.app.session.AppActivityProvider
 import com.alexmls.lazypizza.authorization.di.authModule
-import com.alexmls.lazypizza.cart.di.cartModule
+import com.alexmls.lazypizza.cart_checkout.di.cartModule
 import com.alexmls.lazypizza.catalog.di.catalogModule
+import com.alexmls.lazypizza.core.di.coreModule
 import com.alexmls.lazypizza.history.di.historyModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,8 @@ class App : Application() {
                 catalogModule,
                 cartModule,
                 historyModule,
-                authModule
+                authModule,
+                coreModule
             )
         }
     }

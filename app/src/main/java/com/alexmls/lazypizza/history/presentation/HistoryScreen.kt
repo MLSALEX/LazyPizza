@@ -29,8 +29,8 @@ import com.alexmls.lazypizza.R
 import com.alexmls.lazypizza.core.designsystem.Adaptive
 import com.alexmls.lazypizza.core.designsystem.LayoutType
 import com.alexmls.lazypizza.core.designsystem.LocalLayoutType
-import com.alexmls.lazypizza.core.designsystem.components.NavBar
-import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
+import com.alexmls.lazypizza.core.designsystem.components.top_bars.NavBar
+import com.alexmls.lazypizza.core.designsystem.components.top_bars.NavBarConfig
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import com.alexmls.lazypizza.history.presentation.components.OrderCard
 import com.alexmls.lazypizza.history.presentation.components.OrderHistoryEmptyState

@@ -5,6 +5,7 @@ import com.alexmls.lazypizza.authorization.data.FirebaseAuthRepository
 import com.alexmls.lazypizza.authorization.presentation.AuthViewModel
 import com.alexmls.lazypizza.BuildConfig
 import com.alexmls.lazypizza.core.domain.auth.AuthRepository
+import com.alexmls.lazypizza.core.domain.auth.AuthStateProvider
 import com.google.firebase.auth.FirebaseAuth
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
@@ -22,4 +23,5 @@ val authModule = module {
             )
         }
     }
+    single<AuthStateProvider> { get<AuthRepository>() }
 }

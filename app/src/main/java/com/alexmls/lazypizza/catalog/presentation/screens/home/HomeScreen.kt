@@ -60,8 +60,8 @@ import com.alexmls.lazypizza.core.designsystem.Adaptive
 import com.alexmls.lazypizza.core.designsystem.LayoutType
 import com.alexmls.lazypizza.core.designsystem.LocalLayoutType
 import com.alexmls.lazypizza.core.designsystem.components.LpSearchField
-import com.alexmls.lazypizza.core.designsystem.components.NavBar
-import com.alexmls.lazypizza.core.designsystem.components.NavBarConfig
+import com.alexmls.lazypizza.core.designsystem.components.top_bars.NavBar
+import com.alexmls.lazypizza.core.designsystem.components.top_bars.NavBarConfig
 import com.alexmls.lazypizza.core.designsystem.components.NoResultsMsg
 import com.alexmls.lazypizza.core.designsystem.theme.LazyPizzaTheme
 import kotlinx.coroutines.launch
