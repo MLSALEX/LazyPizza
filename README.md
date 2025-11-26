@@ -43,6 +43,7 @@ https://github.com/user-attachments/assets/4ca5bc22-2b8c-4a84-b16c-73db601536ec
 ![Cart Screen](https://github.com/user-attachments/assets/c09cd966-6091-450a-8f12-c1d1ac3afc7f)
 ![Checkout Screen](https://github.com/user-attachments/assets/ec6848f6-8f20-4edc-b77b-313e773f85bb)
 ![Confirmation Screen](https://github.com/user-attachments/assets/5c643672-ef45-4cbb-8c69-036fcae0a3b5)
+![History Screen](https://github.com/user-attachments/assets/c3592ce3-41d9-4bec-b732-aecce9852f3f)
 
 </details>
 
